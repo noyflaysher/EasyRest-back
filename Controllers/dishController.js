@@ -48,60 +48,16 @@ const addDish = async (req, res, next) => {
   }
 
   res.status(201).json({ product: createdProduct.toObject({ getters: true }) });
-  /*
-  const {
-    dishName,
-    // dishCategory,
-    // dishDescription,
-    // dishImage,
-    // possibleChanges,
-    // prepBar,
-    // estimatedPrepTimeRegular,
-    // estimatedPrepTimeDuringRushHour,
-    // isGlutenFree,
-    // isVegan,
-    // isVegetarian,
-    // isLactoseFree,
-    // dishPrice,
-    // ResturantName,
-  } = req.body;
-
-  const createdDish = new Dish({
-    dishName,
-    // dishCategory,
-    // dishDescription,
-    // dishImage,
-    // possibleChanges,
-    // prepBar,
-    // estimatedPrepTimeRegular,
-    // estimatedPrepTimeDuringRushHour,
-    // isGlutenFree,
-    // isVegan,
-    // isVegetarian,
-    // isLactoseFree,
-    // dishPrice,
-    // ResturantName,
-  });
-  console.log(createdDish);
-  try {
-    await createdDish.save();
-  } catch (err) {
-    const error = new HttpError(
-      "Creating Product failed, please try again.",
-      500
-    );
-    return next(error);
-  }
-
-  res.status(201).json({ dish: createdDish.toObject({ getters: true }) });
-  */
 };
 
 const GetDishByCategory = async (req, res, next) => {
-  const { dishCategory } = req.body;
+  const { dishCategory, ResturantName } = req.body;
   let DishArr;
   try {
-    DishArr = await Dish.find({ dishCategory: dishCategory });
+    DishArr = await Dish.find({
+      dishCategory: dishCategory,
+      ResturantName: ResturantName,
+    });
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not find any Dish for this category.",
@@ -113,9 +69,10 @@ const GetDishByCategory = async (req, res, next) => {
 };
 
 const GetCategoryList = async (req, res, next) => {
+  const ResturantName = req.params.resName;
   let categoryArr;
   try {
-    categoryArr = await Dish.distinct("dishCategory");
+    categoryArr = await Dish.distinct("dishCategory").find({ ResturantName });
     // categoryArr = await categoryArr.distinct(dishCategory);
   } catch (err) {
     const error = new HttpError(

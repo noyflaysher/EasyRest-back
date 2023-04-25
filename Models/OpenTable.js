@@ -14,6 +14,9 @@ const openTableSchema = new Schema({
       price: { type: Number, require: true },
     },
   ],
+  sensitivities: [{ type: String, require: true }],
+  askedForwaiter: { type: Boolean, require: true },
+  ResturantName: { type: String, require: true },
 });
 
 module.exports = mongoose.model("openTable", openTableSchema);
