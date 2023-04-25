@@ -97,4 +97,36 @@ const addDish = async (req, res, next) => {
   */
 };
 
+const GetDishByCategory = async (req, res, next) => {
+  const { dishCategory } = req.body;
+  let DishArr;
+  try {
+    DishArr = await Dish.find({ dishCategory: dishCategory });
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find any Dish for this category.",
+      500
+    );
+    return next(error);
+  }
+  res.json(DishArr);
+};
+
+const GetCategoryList = async (req, res, next) => {
+  let categoryArr;
+  try {
+    categoryArr = await Dish.distinct("dishCategory");
+    // categoryArr = await categoryArr.distinct(dishCategory);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not get category.",
+      500
+    );
+    return next(error);
+  }
+  res.json(categoryArr);
+};
+
 exports.addDish = addDish;
+exports.GetDishByCategory = GetDishByCategory;
+exports.GetCategoryList = GetCategoryList;

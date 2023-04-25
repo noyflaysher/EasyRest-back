@@ -1,5 +1,5 @@
 const express = require("express");
-const dishController = require("../Controllers/dishController");
+const openTableCpntroller = require("../Controllers/openTableController");
 
 const router = express.Router();
 router.get("/categoryList", dishController.GetCategoryList); //  כל המנות לפי המסעדה
