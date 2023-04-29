@@ -11,6 +11,8 @@ const openTableSchema = new Schema({
     {
       dish: { type: mongoose.Types.ObjectId, require: true, ref: "Dishes" },
       amount: { type: Number, require: true },
+      firstOrMain: { type: String, require: true },
+      ready: { type: Boolean, require: true },
       price: { type: Number, require: true },
     },
   ],

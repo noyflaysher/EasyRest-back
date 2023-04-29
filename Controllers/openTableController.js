@@ -13,7 +13,7 @@ const openTable = async (req, res, next) => {
     );
     return next(error);
   }
-  if (!isExist) {
+  if (isExist) {
     const error = new HttpError("Table is not available", 500);
     return next(error);
   }
@@ -55,7 +55,7 @@ const addDishesToTable = async (req, res, next) => {
     );
     return next(error);
   }
-  if (!isExist) {
+  if (isExist) {
     const error = new HttpError("Table is not available", 500);
     return next(error);
   }

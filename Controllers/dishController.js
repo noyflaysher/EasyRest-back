@@ -69,11 +69,8 @@ const GetDishByCategory = async (req, res, next) => {
 };
 
 const GetCategoryList = async (req, res, next) => {
-  const ResturantName = req.params.resName;
-  let categoryArr;
   try {
-    categoryArr = await Dish.distinct("dishCategory").find({ ResturantName });
-    // categoryArr = await categoryArr.distinct(dishCategory);
+    categoryArr = await Dish.distinct("dishCategory");
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not get category.",
