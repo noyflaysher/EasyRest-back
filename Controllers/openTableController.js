@@ -2,6 +2,17 @@ const HttpError = require("../Models/HttpError");
 const OpenTable = require("../Models/OpenTable");
 const Dish = require("../Models/Dish");
 
+/*
+  numTable:1
+  numberOfPeople:1
+  gluten:true
+  lactuse:true
+  isVagan:true
+  isVegi:true
+  others:string
+  ResturantName:string
+  }]
+*/
 const openTable = async (req, res, next) => {
   const {
     numTable,
@@ -58,7 +69,15 @@ const openTable = async (req, res, next) => {
 
   res.status(201).json({ Table: openTable.toObject({ getters: true }) });
 };
-
+/*
+  tableId:
+  dishArray:[{
+      "dishid":"643ef91662cdc37f5379e502" ,
+      "amount":1,
+      "firstOrMain":"F",
+      "allTogether":true
+  }]
+*/
 const addDishesToTable = async (req, res, next) => {
   const { tableId, dishArray } = req.body;
   let isExist;
