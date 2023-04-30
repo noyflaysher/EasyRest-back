@@ -25,7 +25,7 @@ const openTableSchema = new Schema({
   lactuse: { type: Boolean, require: true },
   isVagan: { type: Boolean, require: true },
   isVegi: { type: Boolean, require: true },
-  others: [{ type: String, require: true }],
+  others: { type: String, require: true },
   askedForwaiter: { type: Boolean, require: true },
   ResturantName: { type: String, require: true },
 });
