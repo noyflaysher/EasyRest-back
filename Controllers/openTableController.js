@@ -138,7 +138,9 @@ const addDishesToTable = async (req, res, next) => {
 
   res.status(201).json({ update: isExist.toObject({ getters: true }) });
 };
-
+/*
+  tableId:
+*/
 const FireTable = async (req, res, next) => {
   const { tableId } = req.body;
   let isExist;
