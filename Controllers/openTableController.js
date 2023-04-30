@@ -11,7 +11,6 @@ const Dish = require("../Models/Dish");
   isVegi:true
   others:string
   ResturantName:string
-  }]
 */
 const openTable = async (req, res, next) => {
   const {
