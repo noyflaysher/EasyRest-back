@@ -51,12 +51,11 @@ const addDish = async (req, res, next) => {
 };
 
 const GetDishByCategory = async (req, res, next) => {
-  const { dishCategory, ResturantName } = req.body;
+  const { dishCategory } = req.body;
   let DishArr;
   try {
     DishArr = await Dish.find({
       dishCategory: dishCategory,
-      ResturantName: ResturantName,
     });
   } catch (err) {
     const error = new HttpError(

@@ -1,8 +1,18 @@
 const HttpError = require("../Models/HttpError");
 const OpenTable = require("../Models/OpenTable");
+const Dish = require("../Models/Dish");
 
 const openTable = async (req, res, next) => {
-  const { numTable, numberOfPeople, sensitivities, ResturantName } = req.body;
+  const {
+    numTable,
+    numberOfPeople,
+    gluten,
+    lactuse,
+    isVagan,
+    isVegi,
+    others,
+    ResturantName,
+  } = req.body;
   let isExist;
   try {
     isExist = await OpenTable.find({ numTable: numTable });
@@ -13,19 +23,25 @@ const openTable = async (req, res, next) => {
     );
     return next(error);
   }
-  if (isExist) {
+  if (isExist.length > 0) {
     const error = new HttpError("Table is not available", 500);
     return next(error);
   }
 
-  const openTable = new Dish({
+  const openTable = new OpenTable({
     numTable,
     openTime: new Date(),
+    udate: new Date(),
     numberOfPeople,
     TotalPrice: 0,
     avgPerPerson: 0,
     dishArray: [],
-    sensitivities,
+    fire: false,
+    gluten,
+    lactuse,
+    isVagan,
+    isVegi,
+    others,
     askedForwaiter: false,
     ResturantName,
   });
@@ -44,10 +60,10 @@ const openTable = async (req, res, next) => {
 };
 
 const addDishesToTable = async (req, res, next) => {
-  const { numTable, numberOfPeople, sensitivities, ResturantName } = req.body;
+  const { tableId, dishArray } = req.body;
   let isExist;
   try {
-    isExist = await OpenTable.find({ numTable: numTable });
+    isExist = await OpenTable.findById(tableId);
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not find any Dish for this category.",
@@ -55,34 +71,55 @@ const addDishesToTable = async (req, res, next) => {
     );
     return next(error);
   }
-  if (isExist) {
+  if (!isExist) {
     const error = new HttpError("Table is not available", 500);
     return next(error);
   }
 
-  const openTable = new Dish({
-    numTable,
-    openTime: new Date(),
-    numberOfPeople,
-    TotalPrice: 0,
-    avgPerPerson: 0,
-    dishArray: [],
-    sensitivities,
-    askedForwaiter: false,
-    ResturantName,
-  });
+  let Totalprice = 0;
+  let orderDish = [];
+  let dish, dishId;
+  //  let dishArray = JSON.stringify(dishArray_);
+  for (let i = 0; i < dishArray.length; i++) {
+    try {
+      dishId = dishArray[i].dishid;
+      console.log(dishId);
+      dish = await Dish.findById(dishId);
+      console.log(dish);
+      let price = dish.dishPrice * dishArray[i].amount;
+      Totalprice += price;
+      orderDish.push({
+        dishId: dish,
+        amount: dishArray[i].amount,
+        firstOrMain: dishArray[i].amount,
+        ready: false,
+        allTogether: dishArray[i].allTogether,
+        price: price,
+        orderTime: new Date(),
+      });
+    } catch (err) {
+      const error = new HttpError(
+        "Something went wrong, could not find any Dish for this category.",
+        500
+      );
+      return next(error);
+    }
+  }
+
+  isExist.udate = new Date();
+  isExist.dishArray = orderDish;
+  isExist.TotalPrice = Totalprice;
+  isExist.avgPerPerson = Totalprice / isExist.numberOfPeople;
 
   try {
-    await openTable.save();
+    await isExist.save();
   } catch (err) {
-    const error = new HttpError(
-      "Creating table failed, please try again.",
-      500
-    );
+    const error = new HttpError("update table failed, please try again.", 500);
     return next(error);
   }
 
-  res.status(201).json({ Table: openTable.toObject({ getters: true }) });
+  res.status(201).json({ update: isExist.toObject({ getters: true }) });
 };
 
 exports.openTable = openTable;
+exports.addDishesToTable = addDishesToTable;
