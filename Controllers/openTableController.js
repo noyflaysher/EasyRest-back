@@ -121,5 +121,36 @@ const addDishesToTable = async (req, res, next) => {
   res.status(201).json({ update: isExist.toObject({ getters: true }) });
 };
 
+const FireTable = async (req, res, next) => {
+  const { tableId } = req.body;
+  let isExist;
+  try {
+    isExist = await OpenTable.findById(tableId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find any table for this id.",
+      500
+    );
+    return next(error);
+  }
+  if (!isExist) {
+    const error = new HttpError("Table is  available", 500);
+    return next(error);
+  }
+
+  isExist.udate = new Date();
+  isExist.fire = true;
+
+  try {
+    await isExist.save();
+  } catch (err) {
+    const error = new HttpError("update table failed, please try again.", 500);
+    return next(error);
+  }
+
+  res.status(201).json({ update: isExist.toObject({ getters: true }) });
+};
+
 exports.openTable = openTable;
 exports.addDishesToTable = addDishesToTable;
+exports.FireTable = FireTable;

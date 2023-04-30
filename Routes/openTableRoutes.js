@@ -1,8 +1,9 @@
 const express = require("express");
-const openTableCpntroller = require("../Controllers/openTableController");
+const openTableController = require("../Controllers/openTableController");
 
 const router = express.Router();
-router.post("/open", openTableCpntroller.openTable);
-router.post("/addToOrder", openTableCpntroller.addDishesToTable);
+router.post("/open", openTableController.openTable);
+router.post("/addToOrder", openTableController.addDishesToTable);
+router.post("/fire", openTableController.FireTable);
 
 module.exports = router;
