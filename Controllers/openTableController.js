@@ -171,7 +171,7 @@ const FireTable = async (req, res, next) => {
   res.status(201).json({ update: isExist.toObject({ getters: true }) });
 };
 
-const GetAllTables = async (req, reg, next) => {
+const GetAllTables = async (req, res, next) => {
   let tables;
   try {
     tables = await OpenTable.find({});
