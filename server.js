@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const dishRoute = require("./Routes/dishRoute");
 const openTableRoute = require("./Routes/openTableRoutes");
 const resturantRoute = require("./Routes/resturantRoute");
+const closeTableRoute = require("./Routes/closeTableRoute");
 const app = express();
 
 app.use(bodyParser.json());
@@ -21,6 +22,7 @@ app.use((req, res, next) => {
 app.use("/dish", dishRoute);
 app.use("/openTable", openTableRoute);
 app.use("/res", resturantRoute);
+app.use("/closeTable", closeTableRoute);
 
 app.use((req, res, next) => {
   const error = new HttpError("Could  not find this route", 404);

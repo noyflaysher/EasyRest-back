@@ -28,6 +28,7 @@ const openTableSchema = new Schema({
   others: { type: String, require: true },
   askedForwaiter: { type: Boolean, require: true },
   ResturantName: { type: String, require: true },
+  leftToPay: { type: Number, require: true },
 });
 
 module.exports = mongoose.model("openTable", openTableSchema);

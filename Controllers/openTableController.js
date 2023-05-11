@@ -54,6 +54,7 @@ const openTable = async (req, res, next) => {
     others,
     askedForwaiter: false,
     ResturantName,
+    leftToPay: 0,
   });
 
   try {
@@ -95,6 +96,7 @@ const addDishesToTable = async (req, res, next) => {
   }
 
   let Totalprice = isExist.TotalPrice;
+  let leftPrice = isExist.leftToPay;
   let orderDish = isExist.dishArray;
   let dish, dishId;
 
@@ -106,6 +108,7 @@ const addDishesToTable = async (req, res, next) => {
       console.log(dish);
       let price = dish.dishPrice * dishArray[i].amount;
       Totalprice += price;
+      leftPrice += price;
       orderDish.push({
         dishId: dish,
         amount: dishArray[i].amount,
@@ -127,6 +130,7 @@ const addDishesToTable = async (req, res, next) => {
   isExist.udate = new Date();
   isExist.dishArray = orderDish;
   isExist.TotalPrice = Totalprice;
+  isExist.leftToPay = leftPrice;
   isExist.avgPerPerson = Totalprice / isExist.numberOfPeople;
 
   try {
@@ -184,6 +188,7 @@ const GetAllTables = async (req, res, next) => {
   }
   res.json(tables);
 };
+
 exports.openTable = openTable;
 exports.addDishesToTable = addDishesToTable;
 exports.FireTable = FireTable;
