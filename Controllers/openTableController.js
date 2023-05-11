@@ -94,10 +94,10 @@ const addDishesToTable = async (req, res, next) => {
     return next(error);
   }
 
-  let Totalprice = 0;
-  let orderDish = [];
+  let Totalprice = isExist.TotalPrice;
+  let orderDish = isExist.dishArray;
   let dish, dishId;
-  //  let dishArray = JSON.stringify(dishArray_);
+
   for (let i = 0; i < dishArray.length; i++) {
     try {
       dishId = dishArray[i].dishid;
@@ -171,6 +171,20 @@ const FireTable = async (req, res, next) => {
   res.status(201).json({ update: isExist.toObject({ getters: true }) });
 };
 
+const GetAllTables = async (req, reg, next) => {
+  let tables;
+  try {
+    tables = await OpenTable.find({});
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find any table.",
+      500
+    );
+    return next(error);
+  }
+  res.json(tables);
+};
 exports.openTable = openTable;
 exports.addDishesToTable = addDishesToTable;
 exports.FireTable = FireTable;
+exports.GetAllTables = GetAllTables;

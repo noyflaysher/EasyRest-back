@@ -5,5 +5,6 @@ const router = express.Router();
 router.post("/open", openTableController.openTable);
 router.post("/addToOrder", openTableController.addDishesToTable);
 router.post("/fire", openTableController.FireTable);
+router.get("/getTables", openTableController.GetAllTables);
 
 module.exports = router;
