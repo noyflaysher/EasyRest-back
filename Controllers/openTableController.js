@@ -10,6 +10,7 @@ const Dish = require("../Models/Dish");
   isVagan:true
   isVegi:true
   others:string
+  notes:String
   ResturantName:string
 */
 const openTable = async (req, res, next) => {
@@ -75,6 +76,7 @@ const openTable = async (req, res, next) => {
       "dishid":"643ef91662cdc37f5379e502" ,
       "amount":1,
       "firstOrMain":"F",
+      "changes":[String] array
       "allTogether":true
   }]
 */
@@ -115,6 +117,7 @@ const addDishesToTable = async (req, res, next) => {
         firstOrMain: dishArray[i].amount,
         ready: false,
         allTogether: dishArray[i].allTogether,
+        changes: dishArray[i].changes,
         price: price,
         orderTime: new Date(),
       });
