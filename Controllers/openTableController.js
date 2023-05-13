@@ -1,7 +1,7 @@
 const HttpError = require("../Models/HttpError");
 const OpenTable = require("../Models/OpenTable");
 const Dish = require("../Models/Dish");
-
+const Resturant = require("../Models/Resturant");
 /*
   numTable:1
   numberOfPeople:1
@@ -39,7 +39,30 @@ const openTable = async (req, res, next) => {
     const error = new HttpError("Table is not available", 500);
     return next(error);
   }
+  let changedAvaTable;
+  let validTable = false;
+  try {
+    changedAvaTable = await Resturant.find({ "tableArr.tableNum": numTable });
+    for (let i = 0; i < changedAvaTable[0].tableArr.length; i++) {
+      if (changedAvaTable[0].tableArr[i].tableNum == numTable) {
+        changedAvaTable[0].tableArr[i].available = false;
+        validTable = true;
+        break;
+      }
+    }
+  } catch (err) {}
 
+  if ((validTable = false)) {
+    const error = new HttpError("Table is not available", 500);
+    return next(error);
+  }
+
+  try {
+    await changedAvaTable[0].save();
+  } catch (err) {
+    const error = new HttpError("Somethiing went wrong", 500);
+    return next(error);
+  }
   const openTable = new OpenTable({
     numTable,
     openTime: new Date(),
