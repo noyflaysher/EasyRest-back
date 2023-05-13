@@ -52,7 +52,7 @@ const openTable = async (req, res, next) => {
     }
   } catch (err) {}
 
-  if ((validTable = false)) {
+  if (validTable == false) {
     const error = new HttpError("Table is not available", 500);
     return next(error);
   }
