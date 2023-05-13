@@ -22,6 +22,7 @@ const openTable = async (req, res, next) => {
     isVagan,
     isVegi,
     others,
+    notes,
     ResturantName,
   } = req.body;
   let isExist;
@@ -53,6 +54,7 @@ const openTable = async (req, res, next) => {
     isVagan,
     isVegi,
     others,
+    notes,
     askedForwaiter: false,
     ResturantName,
     leftToPay: 0,
