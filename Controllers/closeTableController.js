@@ -20,7 +20,8 @@ const payment = async (req, res, next) => {
     );
     return next(error);
   }
-  if ((opentbl.length = 0)) {
+  console.log(opentbl);
+  if (opentbl.length == 0) {
     const error = new HttpError("Table is not exist", 500);
     return next(error);
   }
@@ -28,56 +29,58 @@ const payment = async (req, res, next) => {
   for (let i = 0; i < payment.length; i++) {
     paid += payment[i].amountPaid;
   }
-
+  console.log("11111");
   if (paid < opentbl.leftToPay) {
     opentbl.leftToPay -= paid;
     try {
       await opentbl.save();
     } catch (err) {}
     res.status(201).json({ Table: opentbl.toObject({ getters: true }) });
+  } else {
+    console.log("000000");
+    let tip = paid - opentbl.leftToPay;
+
+    let isExist = opentbl;
+    const closeTable = new CloseTable({
+      numTable: isExist.numTable,
+      openTime: isExist.openTime,
+      closeTime: new Date(),
+      numberOfPeople: isExist.numberOfPeople,
+      TotalPrice: isExist.TotalPrice,
+      pTip: tip,
+      avgPerPerson: isExist.avgPerPerson,
+      dishArray: isExist.dishArray,
+      payment,
+      gluten: isExist.gluten,
+      lactuse: isExist.lactuse,
+      isVagan: isExist.isVagan,
+      isVegi: isExist.isVegi,
+      others: isExist.others,
+      notes: isExist.notes,
+      ResturantName: isExist.ResturantName,
+    });
+
+    try {
+      await closeTable.save();
+    } catch (err) {
+      const error = new HttpError(
+        "Creating Close table failed, please try again.",
+        500
+      );
+      return next(error);
+    }
+
+    try {
+      await OpenTable.findByIdAndRemove(tableId);
+    } catch (err) {
+      const error = new HttpError(
+        "remove open table failed, please try again.",
+        500
+      );
+      return next(error);
+    }
+
+    res.status(201).json({ Table: closeTable.toObject({ getters: true }) });
   }
-  let tip = paid - opentbl.leftToPay;
-
-  let isExist = opentbl;
-  const closeTable = new CloseTable({
-    numTable: isExist.numTable,
-    openTime: isExist.openTime,
-    closeTime: new Date(),
-    numberOfPeople: isExist.numberOfPeople,
-    TotalPrice: isExist.TotalPrice,
-    pTip: tip,
-    avgPerPerson: isExist.avgPerPerson,
-    dishArray: isExist.dishArray,
-    payment,
-    gluten: isExist.gluten,
-    lactuse: isExist.lactuse,
-    isVagan: isExist.isVagan,
-    isVegi: isExist.isVegi,
-    others: isExist.others,
-    notes: isExist.notes,
-    ResturantName: isExist.ResturantName,
-  });
-
-  try {
-    await closeTable.save();
-  } catch (err) {
-    const error = new HttpError(
-      "Creating Close table failed, please try again.",
-      500
-    );
-    return next(error);
-  }
-
-  try {
-    await OpenTable.findByIdAndRemove(tableId);
-  } catch (err) {
-    const error = new HttpError(
-      "remove open table failed, please try again.",
-      500
-    );
-    return next(error);
-  }
-
-  res.status(201).json({ Table: closeTable.toObject({ getters: true }) });
 };
 exports.payment = payment;
