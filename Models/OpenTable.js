@@ -21,6 +21,15 @@ const openTableSchema = new Schema({
       orderTime: { type: Date, require: true },
     },
   ],
+  drinkArray:[
+    {
+      drinkId: { type: mongoose.Types.ObjectId, require: true, ref: "Drinks" },
+      amount: { type: Number, require: true },
+      changes: [{ type: String, require: true }],
+      ready: { type: Boolean, require: true },
+      price: { type: Number, require: true },
+    },
+  ],
   fire: { type: Boolean, require: true },
   gluten: { type: Boolean, require: true },
   lactuse: { type: Boolean, require: true },
