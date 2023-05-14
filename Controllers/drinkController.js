@@ -4,6 +4,7 @@ const Drink = require('../Models/Drink');
 const addDrink = async (req, res, next) => {
   const {
     drinkName,
+    drinkCategory,
     drinkDescription,
     drinkImage,
     possibleChanges,
@@ -13,6 +14,7 @@ const addDrink = async (req, res, next) => {
 
   const createdProduct = new Drink({
     drinkName,
+    drinkCategory,
     drinkDescription,
     drinkImage,
     possibleChanges,
@@ -34,44 +36,36 @@ const addDrink = async (req, res, next) => {
   res.status(201).json({ product: createdProduct.toObject({ getters: true }) });
 };
 
-const getAllDrinks = async (req, res, next) => {
-  let drinks;
-  try {
-    drinks = await Drink.find(
-      {},
-      'drinkName drinkDescription drinkImage possibleChanges drinkPrice ResturantName'
-    );
-  } catch (err) {
-    return next(
-      new HttpError('Fatching products failed, please try again later.', 500)
-    );
-  }
-
-  res.json({
-    products: drinks.map((drink) => drink.toObject({ getters: true })),
-  });
-};
-
-const getDrinkById = async (req, res, next) => {
-  const drinkId = req.params.pid;
-  let drink;
-  try {
-    drink = await Drink.findById(drinkId);
-  } catch (err) {
-    return next(
-      new HttpError('Something went wrong, could not find a product.', 500)
-    );
-  }
-
-  if (!product) {
-    return next(
-      new HttpError('Could not find a product for the provided id.', 404)
-    );
-  }
-
-  res.json({ product: drink.toObject({ getters: true }) });
-};
+const getDrinkByCategory = async (req, res, next) => {
+    const { drinkCategory } = req.body;
+    let DrinkArr;
+    try {
+        DrinkArr = await Drink.find({
+            drinkCategory: drinkCategory,
+      });
+    } catch (err) {
+      const error = new HttpError(
+        "Something went wrong, could not find any Dish for this category.",
+        500
+      );
+      return next(error);
+    }
+    res.json(DrinkArr);
+  };
+  
+  const getCategoryList = async (req, res, next) => {
+    try {
+      categoryArr = await Drink.distinct("drinkCategory");
+    } catch (err) {
+      const error = new HttpError(
+        "Something went wrong, could not get category.",
+        500
+      );
+      return next(error);
+    }
+    res.json(categoryArr);
+  };
 
 exports.addDrink = addDrink;
-exports.getAllDrinks = getAllDrinks;
-exports.getDrinkById = getDrinkById;
+exports.getDrinkByCategory = getDrinkByCategory;
+exports.getCategoryList = getCategoryList;
