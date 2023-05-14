@@ -105,7 +105,12 @@ const openTable = async (req, res, next) => {
       "firstOrMain":"F",
       "changes":[String] array
       "allTogether":true
-  }]
+  }],
+  "drinkArray":[{
+          "drinkId":"6460cedaf22beb1e5ac0f591" ,
+          "amount":4,
+          "changes":[]
+         }]
 */
 const addDishesToTable = async (req, res, next) => {
   const { tableId, dishArray, drinkArray } = req.body;
