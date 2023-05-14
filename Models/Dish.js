@@ -16,6 +16,7 @@ const DishSchema = new Schema({
   isLactoseFree: { type: Boolean, default: false },
   dishPrice: { type: Number, require: true },
   ResturantName: { type: String, require: true },
+  orderAmount: { type: Number, require: true },
 });
 
 module.exports = mongoose.model("Dishes", DishSchema);
