@@ -6,11 +6,10 @@ tableId:  id
 payment:[{
     paymentMethod: String (Card, Cash)
     amountPaid: number
-}],
-pTip: number  כמה אחוז הטיפ 
+}]
 */
 const payment = async (req, res, next) => {
-  const { tableId, payment, pTip } = req.body;
+  const { tableId, payment } = req.body;
   let opentbl;
   try {
     opentbl = await OpenTable.findById(tableId);
@@ -34,18 +33,19 @@ const payment = async (req, res, next) => {
     opentbl.leftToPay -= paid;
     try {
       await opentbl.save();
-      res.status(201).json({ Table: opentbl.toObject({ getters: true }) });
     } catch (err) {}
+    res.status(201).json({ Table: opentbl.toObject({ getters: true }) });
   }
-  let isExist = opentbl;
+  let tip = paid - opentbl.leftToPay;
 
+  let isExist = opentbl;
   const closeTable = new CloseTable({
     numTable: isExist.numTable,
     openTime: isExist.openTime,
     closeTime: new Date(),
     numberOfPeople: isExist.numberOfPeople,
     TotalPrice: isExist.TotalPrice,
-    pTip,
+    pTip: tip,
     avgPerPerson: isExist.avgPerPerson,
     dishArray: isExist.dishArray,
     payment,
@@ -54,6 +54,7 @@ const payment = async (req, res, next) => {
     isVagan: isExist.isVagan,
     isVegi: isExist.isVegi,
     others: isExist.others,
+    notes: isExist.notes,
     ResturantName: isExist.ResturantName,
   });
 

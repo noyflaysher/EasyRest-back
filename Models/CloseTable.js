@@ -32,6 +32,7 @@ const closeTableSchema = new Schema({
   isVagan: { type: Boolean, require: true },
   isVegi: { type: Boolean, require: true },
   others: { type: String, require: true },
+  notes: { type: String, require: true },
   ResturantName: { type: String, require: true },
 });
 
