@@ -34,6 +34,7 @@ const addDish = async (req, res, next) => {
     isLactoseFree,
     dishPrice,
     ResturantName,
+    orderAmount: 0,
   });
 
   try {
