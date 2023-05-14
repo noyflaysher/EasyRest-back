@@ -98,8 +98,8 @@ const openTable = async (req, res, next) => {
   res.status(201).json({ Table: openTable.toObject({ getters: true }) });
 };
 /*
-  tableId:
-  dishArray:[{
+  "tableId":
+  "dishArray":[{
       "dishid":"643ef91662cdc37f5379e502" ,
       "amount":1,
       "firstOrMain":"F",
@@ -108,7 +108,7 @@ const openTable = async (req, res, next) => {
   }]
 */
 const addDishesToTable = async (req, res, next) => {
-  const { tableId, dishArray } = req.body;
+  const { tableId, dishArray, drinkArray  } = req.body;
   let isExist;
   try {
     isExist = await OpenTable.findById(tableId);
@@ -127,6 +127,7 @@ const addDishesToTable = async (req, res, next) => {
   let Totalprice = isExist.TotalPrice;
   let leftPrice = isExist.leftToPay;
   let orderDish = isExist.dishArray;
+  let orderDrinks = isExist.drinkArray;
   let dish, dishId;
 
   for (let i = 0; i < dishArray.length; i++) {
@@ -157,8 +158,34 @@ const addDishesToTable = async (req, res, next) => {
     }
   }
 
+  let drink, drinkId;
+
+for (let i = 0; i < drinkArray.length; i++) {
+  try {
+    drinkId = drinkArray[i].drinkId;
+    drink = await Drink.findById(drinkId);
+    let price = drink.price * drinkArray[i].amount;
+    Totalprice += price;
+    leftPrice += price;
+    orderDrinks.push({
+      drinkId: drink,
+      amount: drinkArray[i].amount,
+      ready: false,
+      changes: drinkArray[i].changes,
+      price: price,
+    });
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find any Drink for this category.",
+      500
+    );
+    return next(error);
+  }
+}
+
   isExist.udate = new Date();
   isExist.dishArray = orderDish;
+  isExist.drinkArray = orderDrinks;
   isExist.TotalPrice = Totalprice;
   isExist.leftToPay = leftPrice;
   isExist.avgPerPerson = Totalprice / isExist.numberOfPeople;
@@ -171,87 +198,6 @@ const addDishesToTable = async (req, res, next) => {
   }
 
   res.status(201).json({ update: isExist.toObject({ getters: true }) });
-};
-/*
-  tableId: string
-  drinkArray: [
-    {
-      "drinkId": "6460cf00f22beb1e5ac0f593",
-      "amount": 1,
-      "changes": []
-    }
-  ]
-*/
-const addDrinksToTable = async (req, res, next) => {
-  const { tableId, drinkArray } = req.body;
-
-  let existingTable;
-  try {
-    existingTable = await OpenTable.findById(tableId);
-  } catch (err) {
-    const error = new HttpError(
-      "Something went wrong, could not find the table.",
-      500
-    );
-    return next(error);
-  }
-
-  if (!existingTable) {
-    const error = new HttpError("Table not found.", 404);
-    return next(error);
-  }
-
-  let totalDrinkPrice = 0;
-  const newDrinkArray = [];
-
-  for (const drinkData of drinkArray) {
-    const { drinkId, amount } = drinkData;
-
-    let existingDrink;
-    try {
-      existingDrink = await Drink.findById(drinkId);
-    } catch (err) {
-      const error = new HttpError(
-        "Something went wrong, could not find the drink.",
-        500
-      );
-      return next(error);
-    }
-
-    if (!existingDrink) {
-      const error = new HttpError("Drink not found.", 404);
-      return next(error);
-    }
-
-    const drinkPrice = existingDrink.price * amount;
-    totalDrinkPrice += drinkPrice;
-
-    newDrinkArray.push({
-      drinkId: existingDrink,
-      amount,
-      price: drinkPrice,
-      orderTime: new Date(),
-    });
-  }
-
-  existingTable.drinkArray.push(...newDrinkArray);
-  existingTable.TotalPrice += totalDrinkPrice;
-  existingTable.leftToPay += totalDrinkPrice;
-
-  try {
-    await existingTable.save();
-  } catch (err) {
-    const error = new HttpError(
-      "Adding drinks to the table failed, please try again.",
-      500
-    );
-    return next(error);
-  }
-
-  res.status(201).json({
-    message: "Drinks added to the table successfully.",
-    table: existingTable.toObject({ getters: true }),
-  });
 };
 /*
   tableId:
@@ -400,7 +346,6 @@ const AskedForwaiter = async (req, res, next) => {
 
 exports.openTable = openTable;
 exports.addDishesToTable = addDishesToTable;
-exports.addDrinksToTable = addDrinksToTable;
 exports.FireTable = FireTable;
 exports.updateTable = updateTable;
 exports.GetAllTables = GetAllTables;

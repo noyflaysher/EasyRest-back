@@ -4,7 +4,6 @@ const openTableController = require("../Controllers/openTableController");
 const router = express.Router();
 router.post("/open", openTableController.openTable);
 router.post("/addToOrder", openTableController.addDishesToTable);
-router.post("/addDrinkToOrder", openTableController.addDrinksToTable);
 router.post("/fire", openTableController.FireTable);
 router.patch("/updateTable", openTableController.updateTable);
 router.post("/AskedForwaiter", openTableController.AskedForwaiter);
