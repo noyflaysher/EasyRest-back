@@ -83,4 +83,19 @@ const payment = async (req, res, next) => {
     res.status(201).json({ Table: closeTable.toObject({ getters: true }) });
   }
 };
+
+const GetAllCloseTables = async (req, res, next) => {
+  let tables;
+  try {
+    tables = await CloseTable.find({});
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find any table.",
+      500
+    );
+    return next(error);
+  }
+  res.json(tables);
+};
 exports.payment = payment;
+exports.GetAllCloseTables = GetAllCloseTables;
