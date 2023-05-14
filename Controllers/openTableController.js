@@ -1,7 +1,7 @@
-const HttpError = require("../Models/HttpError");
-const OpenTable = require("../Models/OpenTable");
-const Dish = require("../Models/Dish");
-const Resturant = require("../Models/Resturant");
+const HttpError = require('../Models/HttpError');
+const OpenTable = require('../Models/OpenTable');
+const Dish = require('../Models/Dish');
+
 /*
   numTable:1
   numberOfPeople:1
@@ -19,50 +19,27 @@ const openTable = async (req, res, next) => {
     numberOfPeople,
     gluten,
     lactuse,
-    isVagan,
+    isVegan,
     isVegi,
     others,
-    notes,
     ResturantName,
   } = req.body;
   let isExist;
   try {
-    isExist = await OpenTable.find({ numTable: numTable });
+    const number = parseInt(numTable);
+    isExist = await OpenTable.find({ numTable: number });
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any Dish for this category.",
+      'Something went wrong, could not find any Dish for this category.',
       500
     );
     return next(error);
   }
   if (isExist.length > 0) {
-    const error = new HttpError("Table is not available", 500);
-    return next(error);
-  }
-  let changedAvaTable;
-  let validTable = false;
-  try {
-    changedAvaTable = await Resturant.find({ "tableArr.tableNum": numTable });
-    for (let i = 0; i < changedAvaTable[0].tableArr.length; i++) {
-      if (changedAvaTable[0].tableArr[i].tableNum == numTable) {
-        changedAvaTable[0].tableArr[i].available = false;
-        validTable = true;
-        break;
-      }
-    }
-  } catch (err) {}
-
-  if (validTable == false) {
-    const error = new HttpError("Table is not available", 500);
+    const error = new HttpError('Table is not available', 500);
     return next(error);
   }
 
-  try {
-    await changedAvaTable[0].save();
-  } catch (err) {
-    const error = new HttpError("Somethiing went wrong", 500);
-    return next(error);
-  }
   const openTable = new OpenTable({
     numTable,
     openTime: new Date(),
@@ -74,10 +51,9 @@ const openTable = async (req, res, next) => {
     fire: false,
     gluten,
     lactuse,
-    isVagan,
+    isVegan,
     isVegi,
     others,
-    notes,
     askedForwaiter: false,
     ResturantName,
     leftToPay: 0,
@@ -86,8 +62,9 @@ const openTable = async (req, res, next) => {
   try {
     await openTable.save();
   } catch (err) {
+    console.log(err);
     const error = new HttpError(
-      "Creating table failed, please try again.",
+      'Creating table failed, please try again.',
       500
     );
     return next(error);
@@ -106,19 +83,19 @@ const openTable = async (req, res, next) => {
   }]
 */
 const addDishesToTable = async (req, res, next) => {
-  const { tableId, dishArray } = req.body;
+  const { tableId, dishArray } = req.body.obj;
   let isExist;
   try {
     isExist = await OpenTable.findById(tableId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any Dish for this category.",
+      'Something went wrong, could not find any Dish for this category.',
       500
     );
     return next(error);
   }
   if (!isExist) {
-    const error = new HttpError("Table is not available", 500);
+    const error = new HttpError('Table is not available', 500);
     return next(error);
   }
 
@@ -129,7 +106,8 @@ const addDishesToTable = async (req, res, next) => {
 
   for (let i = 0; i < dishArray.length; i++) {
     try {
-      dishId = dishArray[i].dishid;
+      const dishArr = dishArray[i];
+      dishId = dishArr.id;
       console.log(dishId);
       dish = await Dish.findById(dishId);
       console.log(dish);
@@ -146,9 +124,11 @@ const addDishesToTable = async (req, res, next) => {
         price: price,
         orderTime: new Date(),
       });
+      console.log(orderDish);
     } catch (err) {
+      console.log(err);
       const error = new HttpError(
-        "Something went wrong, could not find any Dish for this category.",
+        'Something went wrong, could not find any Dish for this category.',
         500
       );
       return next(error);
@@ -164,7 +144,7 @@ const addDishesToTable = async (req, res, next) => {
   try {
     await isExist.save();
   } catch (err) {
-    const error = new HttpError("update table failed, please try again.", 500);
+    const error = new HttpError('update table failed, please try again.', 500);
     return next(error);
   }
 
@@ -180,13 +160,13 @@ const FireTable = async (req, res, next) => {
     isExist = await OpenTable.findById(tableId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any table for this id.",
+      'Something went wrong, could not find any table for this id.',
       500
     );
     return next(error);
   }
   if (!isExist) {
-    const error = new HttpError("Table is  available", 500);
+    const error = new HttpError('Table is  available', 500);
     return next(error);
   }
 
@@ -196,7 +176,7 @@ const FireTable = async (req, res, next) => {
   try {
     await isExist.save();
   } catch (err) {
-    const error = new HttpError("update table failed, please try again.", 500);
+    const error = new HttpError('update table failed, please try again.', 500);
     return next(error);
   }
 
@@ -209,7 +189,7 @@ const GetAllTables = async (req, res, next) => {
     tables = await OpenTable.find({});
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any table.",
+      'Something went wrong, could not find any table.',
       500
     );
     return next(error);
