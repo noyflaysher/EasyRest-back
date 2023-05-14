@@ -29,7 +29,6 @@ const payment = async (req, res, next) => {
   for (let i = 0; i < payment.length; i++) {
     paid += payment[i].amountPaid;
   }
-  console.log("11111");
   if (paid < opentbl.leftToPay) {
     opentbl.leftToPay -= paid;
     try {
@@ -37,7 +36,6 @@ const payment = async (req, res, next) => {
     } catch (err) {}
     res.status(201).json({ Table: opentbl.toObject({ getters: true }) });
   } else {
-    console.log("000000");
     let tip = paid - opentbl.leftToPay;
 
     let isExist = opentbl;
