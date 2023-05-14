@@ -1,5 +1,5 @@
-const HttpError = require('../Models/HttpError');
-const Drink = require('../Models/Drink');
+const HttpError = require("../Models/HttpError");
+const Drink = require("../Models/Drink");
 
 const addDrink = async (req, res, next) => {
   const {
@@ -27,7 +27,7 @@ const addDrink = async (req, res, next) => {
     await createdProduct.save();
   } catch (err) {
     const error = new HttpError(
-      'Creating Product failed, please try again. 111',
+      "Creating Product failed, please try again. ",
       500
     );
     return next(error);
@@ -37,34 +37,34 @@ const addDrink = async (req, res, next) => {
 };
 
 const getDrinkByCategory = async (req, res, next) => {
-    const { drinkCategory } = req.body;
-    let DrinkArr;
-    try {
-        DrinkArr = await Drink.find({
-            drinkCategory: drinkCategory,
-      });
-    } catch (err) {
-      const error = new HttpError(
-        "Something went wrong, could not find any Dish for this category.",
-        500
-      );
-      return next(error);
-    }
-    res.json(DrinkArr);
-  };
-  
-  const getCategoryList = async (req, res, next) => {
-    try {
-      categoryArr = await Drink.distinct("drinkCategory");
-    } catch (err) {
-      const error = new HttpError(
-        "Something went wrong, could not get category.",
-        500
-      );
-      return next(error);
-    }
-    res.json(categoryArr);
-  };
+  const { drinkCategory } = req.body;
+  let DrinkArr;
+  try {
+    DrinkArr = await Drink.find({
+      drinkCategory: drinkCategory,
+    });
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find any Dish for this category.",
+      500
+    );
+    return next(error);
+  }
+  res.json(DrinkArr);
+};
+
+const getCategoryList = async (req, res, next) => {
+  try {
+    categoryArr = await Drink.distinct("drinkCategory");
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not get category.",
+      500
+    );
+    return next(error);
+  }
+  res.json(categoryArr);
+};
 
 exports.addDrink = addDrink;
 exports.getDrinkByCategory = getDrinkByCategory;

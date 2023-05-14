@@ -1,17 +1,17 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const DrinkSchema = new Schema({
-  drinkName: { type: String, require: true }, // שם מנה
+  drinkName: { type: String, require: true }, // שם המשקה
   drinkCategory: { type: String, require: true }, // קטגוריה
   drinkDescription: { type: String, require: true }, // תיאור
   drinkImage: { type: String, require: true }, // תמונה
-  possibleChanges: [{ type: String, require: true }], // שינויים אפשריים ממנה
+  possibleChanges: [{ type: String, require: true }], // שינויים אפשריים בשתיה
   drinkPrice: { type: Number, require: true },
   ResturantName: { type: String, require: true },
 });
 
-module.exports = mongoose.model('Drinks', DrinkSchema);
+module.exports = mongoose.model("Drinks", DrinkSchema);
 
 /*
 ,

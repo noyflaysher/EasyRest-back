@@ -1,7 +1,7 @@
 const HttpError = require("../Models/HttpError");
 const OpenTable = require("../Models/OpenTable");
 const Dish = require("../Models/Dish");
-const Drink = require("../Models/Drink")
+const Drink = require("../Models/Drink");
 const Resturant = require("../Models/Resturant");
 /*
   numTable:1
@@ -108,7 +108,7 @@ const openTable = async (req, res, next) => {
   }]
 */
 const addDishesToTable = async (req, res, next) => {
-  const { tableId, dishArray, drinkArray  } = req.body;
+  const { tableId, dishArray, drinkArray } = req.body;
   let isExist;
   try {
     isExist = await OpenTable.findById(tableId);
@@ -133,9 +133,8 @@ const addDishesToTable = async (req, res, next) => {
   for (let i = 0; i < dishArray.length; i++) {
     try {
       dishId = dishArray[i].dishid;
-      console.log(dishId);
       dish = await Dish.findById(dishId);
-      console.log(dish);
+
       let price = dish.dishPrice * dishArray[i].amount;
       Totalprice += price;
       leftPrice += price;
@@ -159,29 +158,29 @@ const addDishesToTable = async (req, res, next) => {
   }
 
   let drink, drinkId;
-
-for (let i = 0; i < drinkArray.length; i++) {
-  try {
-    drinkId = drinkArray[i].drinkId;
-    drink = await Drink.findById(drinkId);
-    let price = drink.price * drinkArray[i].amount;
-    Totalprice += price;
-    leftPrice += price;
-    orderDrinks.push({
-      drinkId: drink,
-      amount: drinkArray[i].amount,
-      ready: false,
-      changes: drinkArray[i].changes,
-      price: price,
-    });
-  } catch (err) {
-    const error = new HttpError(
-      "Something went wrong, could not find any Drink for this category.",
-      500
-    );
-    return next(error);
+  for (let i = 0; i < drinkArray.length; i++) {
+    try {
+      drinkId = drinkArray[i].drinkId;
+      drink = await Drink.findById(drinkId);
+      let price = drink.drinkPrice * drinkArray[i].amount;
+      Totalprice += price;
+      leftPrice += price;
+      console.log(price);
+      orderDrinks.push({
+        drinkId: drink,
+        amount: drinkArray[i].amount,
+        ready: false,
+        changes: drinkArray[i].changes,
+        price: price,
+      });
+    } catch (err) {
+      const error = new HttpError(
+        "Something went wrong, could not find any Drink for this category.",
+        500
+      );
+      return next(error);
+    }
   }
-}
 
   isExist.udate = new Date();
   isExist.dishArray = orderDish;
@@ -189,7 +188,7 @@ for (let i = 0; i < drinkArray.length; i++) {
   isExist.TotalPrice = Totalprice;
   isExist.leftToPay = leftPrice;
   isExist.avgPerPerson = Totalprice / isExist.numberOfPeople;
-
+  console.log(isExist);
   try {
     await isExist.save();
   } catch (err) {
@@ -285,7 +284,6 @@ const updateTable = async (req, res, next) => {
     table: existingTable.toObject({ getters: true }),
   });
 };
-
 
 const GetAllTables = async (req, res, next) => {
   let tables;
