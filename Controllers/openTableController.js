@@ -96,14 +96,17 @@ const openTable = async (req, res, next) => {
   }
 
   try {
-    const resturant = await Resturant.findOne({
-      resturntName: isExist.ResturantName,
+    const resturant = await Resturant.find({
+      resturntName: openTable.ResturantName,
     });
     if (resturant) {
-      console.log(isExist.numberOfPeople);
-      resturant.dinersAmount += isExist.numberOfPeople;
-      await resturant.save();
+      console.log(resturant);
+      console.log(numberOfPeople)
+      console.log(resturant.dinersAmount) //TODO: print undifind we need to understand why
+      resturant.dinersAmount += numberOfPeople;
       console.log(resturant.dinersAmount);
+      await resturant.save();
+     
     }
   } catch (err) {
     const error = new HttpError('Update amount of diners failed, please try again.', 500);
