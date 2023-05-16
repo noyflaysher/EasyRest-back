@@ -3,6 +3,7 @@ const OpenTable = require("../Models/OpenTable");
 const Dish = require("../Models/Dish");
 const Drink = require("../Models/Drink");
 const Resturant = require("../Models/Resturant");
+const OnProcess = require("../Models/DishOnProcess");
 /*
   numTable:1
   numberOfPeople:1
@@ -57,7 +58,6 @@ const openTable = async (req, res, next) => {
     const error = new HttpError("Table is not available", 500);
     return next(error);
   }
-  console.log(changedAvaTable[0]);
   try {
     changedAvaTable[0].dinersAmount += numberOfPeople;
     await changedAvaTable[0].save();
@@ -118,6 +118,7 @@ const openTable = async (req, res, next) => {
 const addDishesToTable = async (req, res, next) => {
   const { tableId, dishArray, drinkArray } = req.body;
   let isExist;
+
   try {
     isExist = await OpenTable.findById(tableId);
   } catch (err) {
@@ -137,6 +138,7 @@ const addDishesToTable = async (req, res, next) => {
   let orderDish = isExist.dishArray;
   let orderDrinks = isExist.drinkArray;
   let dish, dishId;
+  let drink, drinkId;
 
   for (let i = 0; i < dishArray.length; i++) {
     try {
@@ -149,7 +151,7 @@ const addDishesToTable = async (req, res, next) => {
       orderDish.push({
         dishId: dish,
         amount: dishArray[i].amount,
-        firstOrMain: dishArray[i].amount,
+        firstOrMain: dishArray[i].firstOrMain,
         ready: false,
         allTogether: dishArray[i].allTogether,
         changes: dishArray[i].changes,
@@ -165,7 +167,6 @@ const addDishesToTable = async (req, res, next) => {
     }
   }
 
-  let drink, drinkId;
   for (let i = 0; i < drinkArray.length; i++) {
     try {
       drinkId = drinkArray[i].drinkId;
@@ -173,7 +174,6 @@ const addDishesToTable = async (req, res, next) => {
       let price = drink.drinkPrice * drinkArray[i].amount;
       Totalprice += price;
       leftPrice += price;
-      console.log(price);
       orderDrinks.push({
         drinkId: drink,
         amount: drinkArray[i].amount,
@@ -196,7 +196,6 @@ const addDishesToTable = async (req, res, next) => {
   isExist.TotalPrice = Totalprice;
   isExist.leftToPay = leftPrice;
   isExist.avgPerPerson = Totalprice / isExist.numberOfPeople;
-  console.log(isExist);
   try {
     await isExist.save();
   } catch (err) {
@@ -204,6 +203,33 @@ const addDishesToTable = async (req, res, next) => {
     return next(error);
   }
 
+  for (let i = 0; i < isExist.dishArray.length; i++) {
+    if (
+      (isExist.dishArray[i].firstOrMain =
+        "F" && isExist.dishArray[i].ready == false)
+    ) {
+      let orderID = isExist.dishArray[i]._id.toString();
+      let check;
+      try {
+        check = await OnProcess.find({ orderId: orderID });
+      } catch (err) {}
+      if (check.length == 0) {
+        const onProcess = new OnProcess({
+          orderId: orderID,
+          estimatedTime: 10,
+          orderTime: isExist.dishArray[i].orderTime,
+          readyTime: null,
+          beginInline: 4,
+          amount: isExist.dishArray[i].amount,
+          Rest: isExist.ResturantName,
+          prepBar: "",
+        });
+        try {
+          await onProcess.save();
+        } catch (err) {}
+      }
+    }
+  }
   res.status(201).json({ update: isExist.toObject({ getters: true }) });
 };
 /*
@@ -392,6 +418,18 @@ const AskedForBill = async (req, res, next) => {
   }
 
   res.status(201).json({ update: isExist.toObject({ getters: true }) });
+};
+/*
+{
+  orderId: STRING
+}
+*/
+const DishIsReady = async (req, res, next) => {
+  const { orderId } = req.body;
+  let isExists;
+  try {
+    isExists = await OnProcess.find({});
+  } catch (err) {}
 };
 exports.openTable = openTable;
 exports.addDishesToTable = addDishesToTable;
