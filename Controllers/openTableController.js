@@ -4,9 +4,9 @@ const Dish = require("../Models/Dish");
 const Drink = require("../Models/Drink");
 const Resturant = require("../Models/Resturant");
 /*
-  numTable:1
-  numberOfPeople:1
-  gluten:true
+  numTable: number
+  numberOfPeople: number
+  gluten:true/ false
   lactuse:true
   isVagan:true
   isVegi:true
@@ -83,6 +83,7 @@ const openTable = async (req, res, next) => {
     askedForwaiter: false,
     ResturantName,
     leftToPay: 0,
+    payment: [],
   });
 
   try {
@@ -102,14 +103,14 @@ const openTable = async (req, res, next) => {
   "dishArray":[{
       "dishid":"643ef91662cdc37f5379e502" ,
       "amount":1,
-      "firstOrMain":"F",
+      "firstOrMain":"F" / "M",
       "changes":[String] array
-      "allTogether":true
+      "allTogether":true/false
   }],
   "drinkArray":[{
           "drinkId":"6460cedaf22beb1e5ac0f591" ,
           "amount":4,
-          "changes":[]
+          "changes":[string] array
          }]
 */
 const addDishesToTable = async (req, res, next) => {
@@ -233,13 +234,18 @@ const FireTable = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(201).json({ update: isExist.toObject({ getters: true }) });
+  res.status(201).json({ fire: isExist.toObject({ getters: true }) });
 };
 /*
-  tableId: string
-  updates: {
-    numTable:1
+u can send all of this or part of this:
+  tableId: 643ef91662cdc37f5379e502
+  Table: {
     numberOfPeople:1
+    TotalPrice:number
+    avgPerPerson: number
+    dishArray:[]
+    drinkArray:[]
+    fire: boolean
     gluten:true
     lactuse:true
     isVagan:true
@@ -247,6 +253,8 @@ const FireTable = async (req, res, next) => {
     others:string
     notes:String
     ResturantName:string
+    leftToPay: number
+    payment:[]
   }
 */
 const updateTable = async (req, res, next) => {
@@ -289,7 +297,7 @@ const updateTable = async (req, res, next) => {
     table: existingTable.toObject({ getters: true }),
   });
 };
-
+// get
 const GetAllTables = async (req, res, next) => {
   let tables;
   try {
@@ -303,7 +311,11 @@ const GetAllTables = async (req, res, next) => {
   }
   res.json(tables);
 };
-
+/* 
+{
+  tableId: 
+}
+*/
 const AskedForwaiter = async (req, res, next) => {
   const { tableId } = req.body;
   let isExist;

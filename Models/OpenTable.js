@@ -21,7 +21,7 @@ const openTableSchema = new Schema({
       orderTime: { type: Date, require: true },
     },
   ],
-  drinkArray:[
+  drinkArray: [
     {
       drinkId: { type: mongoose.Types.ObjectId, require: true, ref: "Drinks" },
       amount: { type: Number, require: true },
@@ -40,6 +40,12 @@ const openTableSchema = new Schema({
   askedForwaiter: { type: Boolean, require: true },
   ResturantName: { type: String, require: true },
   leftToPay: { type: Number, require: true },
+  payment: [
+    {
+      paymentMethod: { type: String, require: true },
+      amountPaid: { type: Number, require: true },
+    },
+  ],
 });
 
 module.exports = mongoose.model("openTable", openTableSchema);

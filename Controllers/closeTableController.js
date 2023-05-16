@@ -20,7 +20,7 @@ const payment = async (req, res, next) => {
     );
     return next(error);
   }
-  console.log(opentbl);
+
   if (opentbl.length == 0) {
     const error = new HttpError("Table is not exist", 500);
     return next(error);
@@ -31,13 +31,21 @@ const payment = async (req, res, next) => {
   }
   if (paid < opentbl.leftToPay) {
     opentbl.leftToPay -= paid;
+    let paymentArr = opentbl.payment;
+    for (let i = 0; i < payment.length; i++) {
+      paymentArr.push(payment[i]);
+    }
+    opentbl.payment = paymentArr;
     try {
       await opentbl.save();
     } catch (err) {}
     res.status(201).json({ Table: opentbl.toObject({ getters: true }) });
   } else {
     let tip = paid - opentbl.leftToPay;
-
+    let paymentArr = isExist.payment;
+    for (let i = 0; i < payment.length; i++) {
+      paymentArr.push(payment[i]);
+    }
     let isExist = opentbl;
     const closeTable = new CloseTable({
       numTable: isExist.numTable,
@@ -48,7 +56,7 @@ const payment = async (req, res, next) => {
       pTip: tip,
       avgPerPerson: isExist.avgPerPerson,
       dishArray: isExist.dishArray,
-      payment,
+      payment: paymentArr,
       gluten: isExist.gluten,
       lactuse: isExist.lactuse,
       isVagan: isExist.isVagan,
