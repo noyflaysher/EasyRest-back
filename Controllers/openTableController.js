@@ -316,7 +316,7 @@ const GetAllTables = async (req, res, next) => {
 /* 
 {
   tableId: 
-  
+}
 */
 const AskedForwaiter = async (req, res, next) => {
   const { tableId } = req.body;
@@ -359,7 +359,11 @@ const AskedForwaiter = async (req, res, next) => {
 
   res.status(201).json({ update: isExist.toObject({ getters: true }) });
 };
-
+/* 
+{
+  tableId: 
+}
+*/
 const AskedForBill = async (req, res, next) => {
   const { tableId } = req.body;
   let isExist;
