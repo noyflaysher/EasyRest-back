@@ -38,6 +38,7 @@ const openTableSchema = new Schema({
   others: { type: String, require: true },
   notes: { type: String, require: true },
   askedForwaiter: { type: Boolean, require: true },
+  askedForBill: { type: Boolean, require: true },
   ResturantName: { type: String, require: true },
   leftToPay: { type: Number, require: true },
   payment: [

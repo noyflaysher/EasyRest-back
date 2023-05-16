@@ -1,15 +1,18 @@
 const HttpError = require("../Models/HttpError");
 const CloseTable = require("../Models/CloseTable");
 const OpenTable = require("../Models/OpenTable");
+const Resturant = require("../Models/Resturant");
+
 /* 
 tableId:  id 
 payment:[{
     paymentMethod: String (Card, Cash)
     amountPaid: number
-}]
+}],
+discount: number
 */
 const payment = async (req, res, next) => {
-  const { tableId, payment } = req.body;
+  const { tableId, payment, discount } = req.body;
   let opentbl;
   try {
     opentbl = await OpenTable.findById(tableId);
@@ -29,7 +32,7 @@ const payment = async (req, res, next) => {
   for (let i = 0; i < payment.length; i++) {
     paid += payment[i].amountPaid;
   }
-  if (paid < opentbl.leftToPay) {
+  if (paid < opentbl.leftToPay - discount) {
     opentbl.leftToPay -= paid;
     let paymentArr = opentbl.payment;
     for (let i = 0; i < payment.length; i++) {
@@ -41,12 +44,12 @@ const payment = async (req, res, next) => {
     } catch (err) {}
     res.status(201).json({ Table: opentbl.toObject({ getters: true }) });
   } else {
-    let tip = paid - opentbl.leftToPay;
+    let isExist = opentbl;
+    let tip = paid - opentbl.leftToPay - discount;
     let paymentArr = isExist.payment;
     for (let i = 0; i < payment.length; i++) {
       paymentArr.push(payment[i]);
     }
-    let isExist = opentbl;
     const closeTable = new CloseTable({
       numTable: isExist.numTable,
       openTime: isExist.openTime,
@@ -64,6 +67,7 @@ const payment = async (req, res, next) => {
       others: isExist.others,
       notes: isExist.notes,
       ResturantName: isExist.ResturantName,
+      discount,
     });
 
     try {
@@ -75,7 +79,6 @@ const payment = async (req, res, next) => {
       );
       return next(error);
     }
-
     try {
       await OpenTable.findByIdAndRemove(tableId);
     } catch (err) {
@@ -86,6 +89,21 @@ const payment = async (req, res, next) => {
       return next(error);
     }
 
+    let changedAvaTable;
+    let numTable = isExist.numTable;
+    let numberOfPeople = isExist.numberOfPeople;
+
+    try {
+      changedAvaTable = await Resturant.find({ "tableArr.tableNum": numTable });
+      for (let i = 0; i < changedAvaTable[0].tableArr.length; i++) {
+        if (changedAvaTable[0].tableArr[i].tableNum == numTable) {
+          changedAvaTable[0].tableArr[i].available = true;
+          break;
+        }
+      }
+      changedAvaTable[0].dinersAmount -= numberOfPeople;
+      await changedAvaTable[0].save();
+    } catch (err) {}
     res.status(201).json({ Table: closeTable.toObject({ getters: true }) });
   }
 };

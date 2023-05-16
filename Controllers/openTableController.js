@@ -82,6 +82,7 @@ const openTable = async (req, res, next) => {
     others,
     notes,
     askedForwaiter: false,
+    askedForBill: false,
     ResturantName,
     leftToPay: 0,
     payment: [],
@@ -315,7 +316,7 @@ const GetAllTables = async (req, res, next) => {
 /* 
 {
   tableId: 
-}
+  
 */
 const AskedForwaiter = async (req, res, next) => {
   const { tableId } = req.body;
@@ -343,7 +344,6 @@ const AskedForwaiter = async (req, res, next) => {
     const error = new HttpError("update table failed, please try again.", 500);
     return next(error);
   }
-
   setTimeout(async () => {
     isExist.askedForwaiter = false;
     try {
@@ -360,9 +360,39 @@ const AskedForwaiter = async (req, res, next) => {
   res.status(201).json({ update: isExist.toObject({ getters: true }) });
 };
 
+const AskedForBill = async (req, res, next) => {
+  const { tableId } = req.body;
+  let isExist;
+  try {
+    isExist = await OpenTable.findById(tableId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find any table for this id.",
+      500
+    );
+    return next(error);
+  }
+  if (!isExist) {
+    const error = new HttpError("Table is  available", 500);
+    return next(error);
+  }
+
+  isExist.udate = new Date();
+  isExist.askedForBill = true;
+
+  try {
+    await isExist.save();
+  } catch (err) {
+    const error = new HttpError("update table failed, please try again.", 500);
+    return next(error);
+  }
+
+  res.status(201).json({ update: isExist.toObject({ getters: true }) });
+};
 exports.openTable = openTable;
 exports.addDishesToTable = addDishesToTable;
 exports.FireTable = FireTable;
 exports.updateTable = updateTable;
 exports.GetAllTables = GetAllTables;
 exports.AskedForwaiter = AskedForwaiter;
+exports.AskedForBill = AskedForBill;

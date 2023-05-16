@@ -8,5 +8,6 @@ router.post("/fire", openTableController.FireTable);
 router.patch("/updateTable", openTableController.updateTable);
 router.post("/AskedForwaiter", openTableController.AskedForwaiter);
 router.get("/getTables", openTableController.GetAllTables);
+router.post("/AskedForBill", openTableController.AskedForBill);
 
 module.exports = router;

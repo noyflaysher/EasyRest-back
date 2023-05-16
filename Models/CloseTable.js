@@ -34,6 +34,7 @@ const closeTableSchema = new Schema({
   others: { type: String, require: true },
   notes: { type: String, require: true },
   ResturantName: { type: String, require: true },
+  discount: { type: Number, require: true },
 });
 
 module.exports = mongoose.model("closeTable", closeTableSchema);
