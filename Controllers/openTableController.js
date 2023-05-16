@@ -419,18 +419,30 @@ const AskedForBill = async (req, res, next) => {
 
   res.status(201).json({ update: isExist.toObject({ getters: true }) });
 };
+
 /*
 {
   orderId: STRING
 }
 */
+/*
+לא למחוק לאא סיימתי 
 const DishIsReady = async (req, res, next) => {
   const { orderId } = req.body;
   let isExists;
   try {
-    isExists = await OnProcess.find({});
-  } catch (err) {}
+    isExists = await OnProcess.find({'orderId':orderId});
+  } catch (err) {
+    const error = new HttpError("Something went wrong", 500);
+    return next(error);
+  }
+  if(isExists.length=0){
+    const error = new HttpError("order doesnt exists", 500);
+    return next(error);
+  }
+  isExists.
 };
+*/
 exports.openTable = openTable;
 exports.addDishesToTable = addDishesToTable;
 exports.FireTable = FireTable;
