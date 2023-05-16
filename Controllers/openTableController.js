@@ -4,9 +4,9 @@ const Dish = require("../Models/Dish");
 const Drink = require("../Models/Drink");
 const Resturant = require("../Models/Resturant");
 /*
-  numTable: number
-  numberOfPeople: number
-  gluten:true/ false
+  numTable:1
+  numberOfPeople:1
+  gluten:true
   lactuse:true
   isVagan:true
   isVegi:true
@@ -91,6 +91,26 @@ const openTable = async (req, res, next) => {
   } catch (err) {
     const error = new HttpError(
       "Creating table failed, please try again.",
+      500
+    );
+    return next(error);
+  }
+
+  try {
+    const resturant = await Resturant.find({
+      resturntName: openTable.ResturantName,
+    });
+    if (resturant) {
+      console.log(resturant);
+      console.log(numberOfPeople);
+      console.log(resturant.dinersAmount); //TODO: print undifind we need to understand why
+      resturant.dinersAmount += numberOfPeople;
+      console.log(resturant.dinersAmount);
+      await resturant.save();
+    }
+  } catch (err) {
+    const error = new HttpError(
+      "Update amount of diners failed, please try again.",
       500
     );
     return next(error);

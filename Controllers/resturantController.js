@@ -6,7 +6,7 @@ const AddResturant = async (req, res, next) => {
   const Res = new Resturant({
     tableArr,
     resturntName,
-    seats,
+    seats
   });
   try {
     await Res.save();

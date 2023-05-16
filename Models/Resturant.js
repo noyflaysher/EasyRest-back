@@ -10,6 +10,7 @@ const resturantScheama = new Schema({
   ],
   resturntName: { type: String, require: true },
   seats: { type: Number, require: true },
+  dinersAmount: { type: Number, default: 0},
 });
 
 module.exports = mongoose.model("Res", resturantScheama);
