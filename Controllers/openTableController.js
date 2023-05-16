@@ -57,8 +57,9 @@ const openTable = async (req, res, next) => {
     const error = new HttpError("Table is not available", 500);
     return next(error);
   }
-
+  console.log(changedAvaTable[0]);
   try {
+    changedAvaTable[0].dinersAmount += numberOfPeople;
     await changedAvaTable[0].save();
   } catch (err) {
     const error = new HttpError("Somethiing went wrong", 500);
@@ -91,26 +92,6 @@ const openTable = async (req, res, next) => {
   } catch (err) {
     const error = new HttpError(
       "Creating table failed, please try again.",
-      500
-    );
-    return next(error);
-  }
-
-  try {
-    const resturant = await Resturant.find({
-      resturntName: openTable.ResturantName,
-    });
-    if (resturant) {
-      console.log(resturant);
-      console.log(numberOfPeople);
-      console.log(resturant.dinersAmount); //TODO: print undifind we need to understand why
-      resturant.dinersAmount += numberOfPeople;
-      console.log(resturant.dinersAmount);
-      await resturant.save();
-    }
-  } catch (err) {
-    const error = new HttpError(
-      "Update amount of diners failed, please try again.",
       500
     );
     return next(error);
