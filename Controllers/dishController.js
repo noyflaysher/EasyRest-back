@@ -78,6 +78,7 @@ const GetCategoryList = async (req, res, next) => {
     );
     return next(error);
   }
+  categoryArr.push("Drinks");
   res.json(categoryArr);
 };
 

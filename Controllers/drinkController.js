@@ -35,7 +35,9 @@ const addDrink = async (req, res, next) => {
 
   res.status(201).json({ product: createdProduct.toObject({ getters: true }) });
 };
-
+/*
+  drinkCategory:string
+*/
 const getDrinkByCategory = async (req, res, next) => {
   const { drinkCategory } = req.body;
   let DrinkArr;
@@ -52,7 +54,7 @@ const getDrinkByCategory = async (req, res, next) => {
   }
   res.json(DrinkArr);
 };
-
+// get function
 const getCategoryList = async (req, res, next) => {
   try {
     categoryArr = await Drink.distinct("drinkCategory");
