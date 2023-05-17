@@ -373,18 +373,11 @@ const AskedForwaiter = async (req, res, next) => {
     const error = new HttpError("update table failed, please try again.", 500);
     return next(error);
   }
-  setTimeout(async () => {
-    isExist.askedForwaiter = false;
-    try {
-      await isExist.save();
-    } catch (err) {
-      const error = new HttpError(
-        "update table failed, please try again.",
-        500
-      );
-      return next(error);
-    }
-  }, 10000);
+
+  isExist.askedForwaiter = false;
+  try {
+    await isExist.save();
+  } catch (err) {}
 
   res.status(201).json({ update: isExist.toObject({ getters: true }) });
 };
