@@ -143,7 +143,7 @@ const addDishesToTable = async (req, res, next) => {
   for (let i = 0; i < dishArray.length; i++) {
     try {
       dishId = dishArray[i].dishid;
-      if (!dishId) {
+      if (dishId.length == 0) {
         dishId = dishArray[i].id;
       }
       dish = await Dish.findById(dishId);
