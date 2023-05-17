@@ -143,6 +143,9 @@ const addDishesToTable = async (req, res, next) => {
   for (let i = 0; i < dishArray.length; i++) {
     try {
       dishId = dishArray[i].dishid;
+      if (!dishId) {
+        dishId = dishArray[i].id;
+      }
       dish = await Dish.findById(dishId);
 
       let price = dish.dishPrice * dishArray[i].amount;
