@@ -174,7 +174,7 @@ const addDishesToTable = async (req, res, next) => {
     try {
       drinkId = drinkArray[i].drinkId;
       if (drinkId.length === undefined) {
-        drinkId = dishArray[i].id;
+        drinkId = drinkArray[i].id;
       }
       drink = await Drink.findById(drinkId);
       let price = drink.drinkPrice * drinkArray[i].amount;
