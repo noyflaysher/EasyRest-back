@@ -457,10 +457,12 @@ const AskedForwaiter = async (req, res, next) => {
     return next(error);
   }
 
-  isExist.askedForwaiter = false;
-  try {
-    await isExist.save();
-  } catch (err) {}
+  setTimeout(async () => {
+    isExist.askedForwaiter = false;
+    try {
+      await isExist.save();
+    } catch (err) {}
+  }, 3000);
 
   res.status(201).json({ update: isExist.toObject({ getters: true }) });
 };
