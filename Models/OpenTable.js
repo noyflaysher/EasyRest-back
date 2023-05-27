@@ -19,6 +19,8 @@ const openTableSchema = new Schema({
       allTogether: { type: Boolean, require: true },
       price: { type: Number, require: true },
       orderTime: { type: Date, require: true },
+      dishOnline: { type: Number, require: true }, // new
+      estimatedPrepTime: { type: Number, require: true }, // new
     },
   ],
   drinkArray: [

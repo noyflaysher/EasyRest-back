@@ -11,6 +11,7 @@ const resturantScheama = new Schema({
   resturntName: { type: String, require: true },
   seats: { type: Number, require: true },
   dinersAmount: { type: Number, require: true },
+  KitchenEmplyees: { type: Number, require: true },
 });
 
 module.exports = mongoose.model("Res", resturantScheama);

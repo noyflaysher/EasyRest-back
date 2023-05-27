@@ -6,7 +6,6 @@ const AllPrepTime = new Schema({
   amount: { type: Number, require: true },
   prepBar: { type: String, require: true },
   numOfKitchenEmployees: { type: Number, require: true },
-  numOfPeople: { type: Number, require: true },
   PercentageOfTotal: { type: Number, require: true },
   dishesBefore: { type: Number, require: true },
   estTimeMinute: { type: Number, require: true },

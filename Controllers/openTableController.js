@@ -4,6 +4,26 @@ const Dish = require("../Models/Dish");
 const Drink = require("../Models/Drink");
 const Resturant = require("../Models/Resturant");
 const OnProcess = require("../Models/DishOnProcess");
+const AVGTime = require("../Models/AVGTime");
+const AllPreperationTime = require("../Models/AllPreperationTime");
+const AVGTime = require("../Models/AVGTime");
+
+// help function
+const checkAmount = (numberOfPeople) => {
+  if (numberOfPeople >= 0 && numberOfPeople < 0.25) {
+    peoplePer = 1;
+  }
+  if (numberOfPeople >= 0.25 && numberOfPeople < 0.5) {
+    peoplePer = 2;
+  }
+  if (numberOfPeople >= 0.5 && numberOfPeople < 0.75) {
+    peoplePer = 3;
+  }
+  if (numberOfPeople >= 0.75 && numberOfPeople <= 1) {
+    peoplePer = 4;
+  }
+  return peoplePer;
+};
 /*
   numTable:1
   numberOfPeople:1
@@ -118,7 +138,7 @@ const openTable = async (req, res, next) => {
 const addDishesToTable = async (req, res, next) => {
   const { tableId, dishArray, drinkArray } = req.body;
   let isExist;
-
+  // check if table exists
   try {
     isExist = await OpenTable.findById(tableId);
   } catch (err) {
@@ -137,20 +157,74 @@ const addDishesToTable = async (req, res, next) => {
   let leftPrice = isExist.leftToPay;
   let orderDish = isExist.dishArray;
   let orderDrinks = isExist.drinkArray;
-  let dish, dishId;
-  let drink, drinkId;
+  let numTable = isExist.numTable;
+  let dish,
+    dishId,
+    dishOnline,
+    onprocess,
+    peoplePer,
+    numberOfPeople,
+    drink,
+    prepBar,
+    estimatedPrepTimeOBJ,
+    estimatedTime,
+    drinkId;
+  // check guest amount
 
+  let changedAvaTable;
+  try {
+    changedAvaTable = await Resturant.find({ "tableArr.tableNum": numTable });
+    //אחוז היושבים במסעדה
+    numberOfPeople = changedAvaTable[0].dinersAmount / changedAvaTable[0].seats;
+    // add employees
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find any resturant.",
+      500
+    );
+    return next(error);
+  }
+  peoplePer = checkAmount(numberOfPeople);
+
+  // create the dish array with all the detailes
   for (let i = 0; i < dishArray.length; i++) {
     try {
+      // app id
       dishId = dishArray[i].dishid;
+      // web id
       if (dishId.length === undefined) {
         dishId = dishArray[i].id;
       }
       dish = await Dish.findById(dishId);
+      // check how much dishes is on process.
+      prepBar = dish.prepBar;
+      onprocess = await OnProcess.find({ prepBar: prepBar });
+      if (onprocess == undefined) dishOnline = 0;
+      else dishOnline = onprocess.length;
 
-      let price = dish.dishPrice * dishArray[i].amount;
-      Totalprice += price;
-      leftPrice += price;
+      let price = dish.dishPrice * dishArray[i].amount; // dish price
+      Totalprice += price; // add to total price (order)
+      leftPrice += price; // add to left to pay
+
+      estimatedPrepTimeOBJ = await AVGTime.find({
+        dishId: dish,
+        amount: dishArray[i].amount,
+        prepBar: prepBar,
+        numOfKitchenEmployees: 0,
+        PercentagePeople: peoplePer,
+        dishesBefore: dishOnline,
+      });
+
+      if (estimatedPrepTimeOBJ == undefined) {
+        if (peoplePer == 3 || peoplePer == 4)
+          estimatedTime = dish.estimatedPrepTimeDuringRushHour;
+        else estimatedTime = dish.estimatedPrepTimeRegular;
+      } else {
+        estimatedTime =
+          estimatedPrepTimeOBJ.AvgLastTimes *
+          (1 - estimatedPrepTimeOBJ.ErrorPercentageLastTimes);
+      }
+
       orderDish.push({
         dishId: dish,
         amount: dishArray[i].amount,
@@ -160,6 +234,8 @@ const addDishesToTable = async (req, res, next) => {
         changes: dishArray[i].changes,
         price: price,
         orderTime: new Date(),
+        dishOnline: dishOnline,
+        estimatedPrepTime: estimatedTime,
       });
     } catch (err) {
       const error = new HttpError(
@@ -169,7 +245,7 @@ const addDishesToTable = async (req, res, next) => {
       return next(error);
     }
   }
-
+  // drinks
   for (let i = 0; i < drinkArray.length; i++) {
     try {
       drinkId = drinkArray[i].drinkId;
@@ -202,6 +278,7 @@ const addDishesToTable = async (req, res, next) => {
   isExist.TotalPrice = Totalprice;
   isExist.leftToPay = leftPrice;
   isExist.avgPerPerson = Totalprice / isExist.numberOfPeople;
+
   try {
     await isExist.save();
   } catch (err) {
@@ -222,13 +299,16 @@ const addDishesToTable = async (req, res, next) => {
       if (check.length == 0) {
         const onProcess = new OnProcess({
           orderId: orderID,
-          estimatedTime: 10,
+          dishId: isExist.dishArray[i].dishId,
+          estimatedTime: isExist.dishArray[i].estimatedPrepTime,
           orderTime: isExist.dishArray[i].orderTime,
           readyTime: null,
-          beginInline: 4,
+          beginInline: isExist.dishArray[i].dishOnline,
           amount: isExist.dishArray[i].amount,
           Rest: isExist.ResturantName,
-          prepBar: "",
+          prepBar: prepBar,
+          PerOfPeople: peoplePer,
+          numOfKitchenEmployees: 0, // change !!!
         });
         try {
           await onProcess.save();
@@ -419,29 +499,115 @@ const AskedForBill = async (req, res, next) => {
   res.status(201).json({ update: isExist.toObject({ getters: true }) });
 };
 
-/*
-{
-  orderId: STRING
-}
-*/
-/*
-לא למחוק לאא סיימתי 
+// remove all dishOnProcess
+const RemoveAll = async (req, res, next) => {
+  let dishArray;
+  try {
+    dishArray = await OnProcess.find({});
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find any table.",
+      500
+    );
+    return next(error);
+  }
+  try {
+    for (let i = 0; i < dishArray.length; i++) await dishArray[i].remove();
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not remove dishOnProcess.",
+      500
+    );
+    return next(error);
+  }
+
+  res.json({ remove });
+};
+/*{orderId: STRING} */
+
 const DishIsReady = async (req, res, next) => {
   const { orderId } = req.body;
   let isExists;
   try {
-    isExists = await OnProcess.find({'orderId':orderId});
+    isExists = await OnProcess.find({ orderId: orderId });
   } catch (err) {
     const error = new HttpError("Something went wrong", 500);
     return next(error);
   }
-  if(isExists.length=0){
+  if ((isExists.length = 0)) {
     const error = new HttpError("order doesnt exists", 500);
     return next(error);
   }
-  isExists.
+
+  const AllPrepDishTime = new AllPreperationTime({
+    dishId: isExists.dishId,
+    amount: isExists.amount,
+    prepBar: isExists.prepBar,
+    numOfKitchenEmployees: isExists.numOfKitchenEmployees,
+    PercentageOfTotal: isExists.PerOfPeople,
+    dishesBefore: isExists.beginInline,
+    estTimeMinute: isExists.estimatedTime,
+    realTimeMinutes: Number(orderTime - Date()), // chech
+    ErrorPercentage:
+      (isExists.estimatedTime - Number(orderTime - Date())) /
+      isExists.estimatedTime,
+  });
+  // add to AllPreptome
+  try {
+    await AllPrepDishTime.save();
+  } catch (err) {
+    const error = new HttpError("Something went wrong add all dishes", 500);
+    return next(error);
+  }
+  // remove from dish on process
+  try {
+    await isExists.remove();
+  } catch (err) {
+    const error = new HttpError("Something went wrong remove onprocess", 500);
+    return next(error);
+  }
+  // add to avg
+  // get all match dish & amount & number employes & number of people & dish before
+  // do avg to real time
+  // do avg to the mistake
+  // i dont know how to calc the Error Percentage
+  // if there are no dishes that match, add this detailes.
+
+  let avg;
+  try {
+    avg = await AVGTime.find({
+      dishId: AllPrepDishTime.dishId,
+      amount: AllPrepDishTime.amount,
+      prepBar: AllPrepDishTime.prepBar,
+      numOfKitchenEmployees: AllPrepDishTime.numOfKitchenEmployees,
+      PercentagePeople: AllPrepDishTime.PercentageOfTotal,
+      dishesBefore: AllPrepDishTime.dishesBefore,
+    });
+  } catch (err) {}
+
+  if (avg == undefined) {
+    const AVGTimeDish = new AVGTime({
+      dishId: isExists.dishId,
+      amount: isExists.amount,
+      prepBar: isExists.prepBar,
+      numOfKitchenEmployees: isExists.numOfKitchenEmployees,
+      PercentageOfTotal: isExists.PerOfPeople,
+      dishesBefore: isExists.beginInline,
+      AvgLastTimes: isExists.estimatedTime,
+      realTimeMinutes: AllPrepDishTime.realTimeMinutes,
+      AvgDiffLastTimes: ABS(
+        AllPrepDishTime.realTimeMinutes - AllPrepDishTime.estTimeMinute
+      ),
+      ErrorPercentageLastTimes: AllPrepDishTime.ErrorPercentage,
+    });
+    await AVGTimeDish.save();
+  } else {
+  }
+  res
+    .status(201)
+    .json({ AllPrepDishTime: AllPrepDishTime.toObject({ getters: true }) });
 };
-*/
+
 exports.openTable = openTable;
 exports.addDishesToTable = addDishesToTable;
 exports.FireTable = FireTable;
@@ -449,3 +615,4 @@ exports.updateTable = updateTable;
 exports.GetAllTables = GetAllTables;
 exports.AskedForwaiter = AskedForwaiter;
 exports.AskedForBill = AskedForBill;
+exports.RemoveAll = RemoveAll;

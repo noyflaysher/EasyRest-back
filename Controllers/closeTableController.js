@@ -121,5 +121,30 @@ const GetAllCloseTables = async (req, res, next) => {
   }
   res.json(tables);
 };
+
+const RemoveAll = async (req, res, next) => {
+  let tables;
+  try {
+    tables = await CloseTable.find({});
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find any table.",
+      500
+    );
+    return next(error);
+  }
+  try {
+    for (let i = 0; i < tables.length; i++) await tables[i].remove();
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not remove table.",
+      500
+    );
+    return next(error);
+  }
+
+  res.json({ remove });
+};
 exports.payment = payment;
 exports.GetAllCloseTables = GetAllCloseTables;
+exports.RemoveAll = RemoveAll;
