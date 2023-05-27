@@ -6,7 +6,6 @@ const Resturant = require("../Models/Resturant");
 const OnProcess = require("../Models/DishOnProcess");
 const AVGTime = require("../Models/AVGTime");
 const AllPreperationTime = require("../Models/AllPreperationTime");
-const AVGTime = require("../Models/AVGTime");
 
 // help function
 const checkAmount = (numberOfPeople) => {
@@ -549,9 +548,9 @@ const DishIsReady = async (req, res, next) => {
     PercentageOfTotal: isExists.PerOfPeople,
     dishesBefore: isExists.beginInline,
     estTimeMinute: isExists.estimatedTime,
-    realTimeMinutes: Number(orderTime - Date()), // chech
+    realTimeMinutes: Number(Date() - orderTime), // chech
     ErrorPercentage:
-      (isExists.estimatedTime - Number(orderTime - Date())) /
+      Math.abs(isExists.estimatedTime - Number(orderTime - Date())) /
       isExists.estimatedTime,
   });
   // add to AllPreptome
@@ -597,7 +596,7 @@ const DishIsReady = async (req, res, next) => {
       dishesBefore: isExists.beginInline,
       AvgLastTimes: isExists.estimatedTime,
       realTimeMinutes: AllPrepDishTime.realTimeMinutes,
-      AvgDiffLastTimes: ABS(
+      AvgDiffLastTimes: Math.abs(
         AllPrepDishTime.realTimeMinutes - AllPrepDishTime.estTimeMinute
       ),
       ErrorPercentageLastTimes: AllPrepDishTime.ErrorPercentage,
