@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/static/css/main.382f3921.css",
+    "main.js": "/static/js/main.83608070.js",
+    "static/media/chocolate-cake.jpeg": "/static/media/chocolate-cake.ffdc74bad540971011fc.jpeg",
+    "static/media/mini-hanburger-with-mixed-salad_650366-229.avif": "/static/media/mini-hanburger-with-mixed-salad_650366-229.7c2bbdcafa41f5c3632e.avif",
+    "static/media/titleReservation.png": "/static/media/titleReservation.d4992080d61224689264.png",
+    "static/media/bread.jpeg": "/static/media/bread.30eed7e727b8bc7f1493.jpeg",
+    "static/media/corason.jpeg": "/static/media/corason.4750f1a1a1a3dc11b362.jpeg",
+    "index.html": "/index.html",
+    "main.382f3921.css.map": "/static/css/main.382f3921.css.map",
+    "main.83608070.js.map": "/static/js/main.83608070.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.382f3921.css",
+    "static/js/main.83608070.js"
+  ]
+}
