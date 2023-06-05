@@ -587,6 +587,8 @@ const DishIsReady = async (req, res, next) => {
     const error = new HttpError('Something went wrong add all dishes', 500);
     return next(error);
   }
+
+  //
   // remove from dish on process
   // add to avg
   // get all match dish & amount & number employes & number of people & dish before
