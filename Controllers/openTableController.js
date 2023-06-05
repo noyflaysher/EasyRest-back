@@ -594,7 +594,7 @@ const DishIsReady = async (req, res, next) => {
   // do avg to the mistake
   // i dont know how to calc the Error Percentage
   // if there are no dishes that match, add this detailes.
-
+  //
   let avg;
   try {
     avg = await AVGTime.find({
