@@ -267,7 +267,7 @@ const addDishesToTable = async (req, res, next) => {
   for (let i = 0; i < drinkArray.length; i++) {
     try {
       drinkId = drinkArray[i].drinkId;
-      if (drinkId.length === undefined) {
+      if (drinkId === undefined) {
         drinkId = drinkArray[i].id;
       }
       drink = await Drink.findById(drinkId);
