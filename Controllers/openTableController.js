@@ -1,11 +1,11 @@
-const HttpError = require("../Models/HttpError");
-const OpenTable = require("../Models/OpenTable");
-const Dish = require("../Models/Dish");
-const Drink = require("../Models/Drink");
-const Resturant = require("../Models/Resturant");
-const OnProcess = require("../Models/DishOnProcess");
-const AVGTime = require("../Models/AVGTime");
-const AllPreperationTime = require("../Models/AllPreperationTime");
+const HttpError = require('../Models/HttpError');
+const OpenTable = require('../Models/OpenTable');
+const Dish = require('../Models/Dish');
+const Drink = require('../Models/Drink');
+const Resturant = require('../Models/Resturant');
+const OnProcess = require('../Models/DishOnProcess');
+const AVGTime = require('../Models/AVGTime');
+const AllPreperationTime = require('../Models/AllPreperationTime');
 
 // help function
 const checkAmount = (numberOfPeople) => {
@@ -52,19 +52,19 @@ const openTable = async (req, res, next) => {
     isExist = await OpenTable.find({ numTable: numTable });
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any Dish for this category.",
+      'Something went wrong, could not find any Dish for this category.',
       500
     );
     return next(error);
   }
   if (isExist.length > 0) {
-    const error = new HttpError("Table is not available", 500);
+    const error = new HttpError('Table is not available', 500);
     return next(error);
   }
   let changedAvaTable;
   let validTable = false;
   try {
-    changedAvaTable = await Resturant.find({ "tableArr.tableNum": numTable });
+    changedAvaTable = await Resturant.find({ 'tableArr.tableNum': numTable });
     for (let i = 0; i < changedAvaTable[0].tableArr.length; i++) {
       if (changedAvaTable[0].tableArr[i].tableNum == numTable) {
         changedAvaTable[0].tableArr[i].available = false;
@@ -75,14 +75,14 @@ const openTable = async (req, res, next) => {
   } catch (err) {}
 
   if (validTable == false) {
-    const error = new HttpError("Table is not available", 500);
+    const error = new HttpError('Table is not available', 500);
     return next(error);
   }
   try {
     changedAvaTable[0].dinersAmount += numberOfPeople;
     await changedAvaTable[0].save();
   } catch (err) {
-    const error = new HttpError("Somethiing went wrong", 500);
+    const error = new HttpError('Somethiing went wrong', 500);
     return next(error);
   }
   const openTable = new OpenTable({
@@ -112,7 +112,7 @@ const openTable = async (req, res, next) => {
     await openTable.save();
   } catch (err) {
     const error = new HttpError(
-      "Creating table failed, please try again.",
+      'Creating table failed, please try again.',
       500
     );
     return next(error);
@@ -143,13 +143,13 @@ const addDishesToTable = async (req, res, next) => {
     isExist = await OpenTable.findById(tableId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any Dish for this category.",
+      'Something went wrong, could not find any Dish for this category.',
       500
     );
     return next(error);
   }
   if (!isExist) {
-    const error = new HttpError("Table is not available", 500);
+    const error = new HttpError('Table is not available', 500);
     return next(error);
   }
 
@@ -173,13 +173,13 @@ const addDishesToTable = async (req, res, next) => {
 
   let changedAvaTable;
   try {
-    changedAvaTable = await Resturant.find({ "tableArr.tableNum": numTable });
+    changedAvaTable = await Resturant.find({ 'tableArr.tableNum': numTable });
     //אחוז היושבים במסעדה
     numberOfPeople = changedAvaTable[0].dinersAmount / changedAvaTable[0].seats;
     // add employees
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any resturant.",
+      'Something went wrong, could not find any resturant.',
       500
     );
     return next(error);
@@ -202,11 +202,11 @@ const addDishesToTable = async (req, res, next) => {
       onprocess = await OnProcess.find({ prepBar: prepBar });
       if (onprocess == undefined) dishOnline = 0;
       else dishOnline = onprocess.length;
-      console.log("-1");
+      console.log('-1');
       let price = dish.dishPrice * dishArray[i].amount; // dish price
       Totalprice += price; // add to total price (order)
       leftPrice += price; // add to left to pay
-      console.log("0");
+      console.log('0');
       estimatedPrepTimeOBJ = await AVGTime.find({
         dishId: dish,
         amount: dishArray[i].amount,
@@ -222,16 +222,16 @@ const addDishesToTable = async (req, res, next) => {
       ) {
         if (peoplePer == 3 || peoplePer == 4) {
           estimatedTime = dish.estimatedPrepTimeDuringRushHour;
-          console.log("dish", dish);
+          console.log('dish', dish);
           console.log(
-            "estimatedPrepTimeDuringRushHour",
+            'estimatedPrepTimeDuringRushHour',
             dish.estimatedPrepTimeDuringRushHour
           );
         } else {
           estimatedTime = dish.estimatedPrepTimeRegular;
-          console.log("dish", dish);
+          console.log('dish', dish);
           console.log(
-            "estimatedPrepTimeRegular",
+            'estimatedPrepTimeRegular',
             dish.estimatedPrepTimeRegular
           );
         }
@@ -239,10 +239,10 @@ const addDishesToTable = async (req, res, next) => {
         estimatedTime =
           estimatedPrepTimeOBJ[0].AvgLastTimes *
           (1 - estimatedPrepTimeOBJ[0].ErrorPercentageLastTimes);
-        console.log("estimatedPrepTimeOBJ", estimatedPrepTimeOBJ);
-        console.log("AvgLastTimes", estimatedPrepTimeOBJ[0].AvgLastTimes);
+        console.log('estimatedPrepTimeOBJ', estimatedPrepTimeOBJ);
+        console.log('AvgLastTimes', estimatedPrepTimeOBJ[0].AvgLastTimes);
       }
-      console.log("estimatedTime: ", estimatedTime);
+      console.log('estimatedTime: ', estimatedTime);
       orderDish.push({
         dishId: dish,
         amount: dishArray[i].amount,
@@ -257,7 +257,7 @@ const addDishesToTable = async (req, res, next) => {
       });
     } catch (err) {
       const error = new HttpError(
-        "Something went wrong, could not find any Dish for this category.",
+        'Something went wrong, could not find any Dish for this category.',
         500
       );
       return next(error);
@@ -283,7 +283,7 @@ const addDishesToTable = async (req, res, next) => {
       });
     } catch (err) {
       const error = new HttpError(
-        "Something went wrong, could not find any Drink for this category.",
+        'Something went wrong, could not find any Drink for this category.',
         500
       );
       return next(error);
@@ -300,14 +300,14 @@ const addDishesToTable = async (req, res, next) => {
   try {
     await isExist.save();
   } catch (err) {
-    const error = new HttpError("update table failed, please try again.", 500);
+    const error = new HttpError('update table failed, please try again.', 500);
     return next(error);
   }
 
   for (let i = 0; i < isExist.dishArray.length; i++) {
     if (
       (isExist.dishArray[i].firstOrMain =
-        "F" && isExist.dishArray[i].ready == false)
+        'F' && isExist.dishArray[i].ready == false)
     ) {
       let orderID = isExist.dishArray[i]._id.toString();
 
@@ -347,13 +347,13 @@ const FireTable = async (req, res, next) => {
     isExist = await OpenTable.findById(tableId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any table for this id.",
+      'Something went wrong, could not find any table for this id.',
       500
     );
     return next(error);
   }
   if (!isExist) {
-    const error = new HttpError("Table is  available", 500);
+    const error = new HttpError('Table is  available', 500);
     return next(error);
   }
 
@@ -363,7 +363,7 @@ const FireTable = async (req, res, next) => {
   try {
     await isExist.save();
   } catch (err) {
-    const error = new HttpError("update table failed, please try again.", 500);
+    const error = new HttpError('update table failed, please try again.', 500);
     return next(error);
   }
 
@@ -398,14 +398,14 @@ const updateTable = async (req, res, next) => {
     existingTable = await OpenTable.findById(tableId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find the table.",
+      'Something went wrong, could not find the table.',
       500
     );
     return next(error);
   }
 
   if (!existingTable) {
-    const error = new HttpError("Table not found.", 404);
+    const error = new HttpError('Table not found.', 404);
     return next(error);
   }
 
@@ -419,14 +419,14 @@ const updateTable = async (req, res, next) => {
     await existingTable.save();
   } catch (err) {
     const error = new HttpError(
-      "Updating the table failed, please try again.",
+      'Updating the table failed, please try again.',
       500
     );
     return next(error);
   }
 
   res.status(200).json({
-    message: "Table updated successfully.",
+    message: 'Table updated successfully.',
     table: existingTable.toObject({ getters: true }),
   });
 };
@@ -437,7 +437,7 @@ const GetAllTables = async (req, res, next) => {
     tables = await OpenTable.find({});
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any table.",
+      'Something went wrong, could not find any table.',
       500
     );
     return next(error);
@@ -456,13 +456,13 @@ const AskedForwaiter = async (req, res, next) => {
     isExist = await OpenTable.findById(tableId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any table for this id.",
+      'Something went wrong, could not find any table for this id.',
       500
     );
     return next(error);
   }
   if (!isExist) {
-    const error = new HttpError("Table is  available", 500);
+    const error = new HttpError('Table is  available', 500);
     return next(error);
   }
 
@@ -472,7 +472,7 @@ const AskedForwaiter = async (req, res, next) => {
   try {
     await isExist.save();
   } catch (err) {
-    const error = new HttpError("update table failed, please try again.", 500);
+    const error = new HttpError('update table failed, please try again.', 500);
     return next(error);
   }
 
@@ -497,13 +497,13 @@ const AskedForBill = async (req, res, next) => {
     isExist = await OpenTable.findById(tableId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any table for this id.",
+      'Something went wrong, could not find any table for this id.',
       500
     );
     return next(error);
   }
   if (!isExist) {
-    const error = new HttpError("Table is  available", 500);
+    const error = new HttpError('Table is  available', 500);
     return next(error);
   }
 
@@ -513,7 +513,7 @@ const AskedForBill = async (req, res, next) => {
   try {
     await isExist.save();
   } catch (err) {
-    const error = new HttpError("update table failed, please try again.", 500);
+    const error = new HttpError('update table failed, please try again.', 500);
     return next(error);
   }
 
@@ -527,7 +527,7 @@ const RemoveAll = async (req, res, next) => {
     dishArray = await OnProcess.find({});
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any table.",
+      'Something went wrong, could not find any table.',
       500
     );
     return next(error);
@@ -539,13 +539,13 @@ const RemoveAll = async (req, res, next) => {
     }
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not remove dishOnProcess.",
+      'Something went wrong, could not remove dishOnProcess.',
       500
     );
     return next(error);
   }
 
-  res.json({ remove: "remove" });
+  res.json({ remove: 'remove' });
 };
 /*{orderId: STRING} */
 
@@ -555,11 +555,11 @@ const DishIsReady = async (req, res, next) => {
   try {
     isExists = await OnProcess.findOne({ orderId: orderId });
   } catch (err) {
-    const error = new HttpError("Something went wrong", 500);
+    const error = new HttpError('Something went wrong', 500);
     return next(error);
   }
   if (isExists.length == 0) {
-    const error = new HttpError("order doesnt exists", 500);
+    const error = new HttpError('order doesnt exists', 500);
     return next(error);
   }
 
@@ -584,7 +584,7 @@ const DishIsReady = async (req, res, next) => {
   try {
     await AllPrepDishTime.save();
   } catch (err) {
-    const error = new HttpError("Something went wrong add all dishes", 500);
+    const error = new HttpError('Something went wrong add all dishes', 500);
     return next(error);
   }
   // remove from dish on process
@@ -605,20 +605,20 @@ const DishIsReady = async (req, res, next) => {
       PercentagePeople: AllPrepDishTime.PercentageOfTotal,
       dishesBefore: AllPrepDishTime.dishesBefore,
     });
-    console.log("avg:", avg);
+    console.log('avg:', avg);
   } catch (err) {}
   let findDish;
   try {
     findDish = await Dish.findById(isExists.dishId);
   } catch (err) {
-    const error = new HttpError("Something went wrong remove onprocess", 500);
+    const error = new HttpError('Something went wrong remove onprocess', 500);
     return next(error);
   }
   if (!findDish) {
-    const error = new HttpError("Something went wrong remove find dish", 500);
+    const error = new HttpError('Something went wrong remove find dish', 500);
     return next(error);
   }
-
+  //
   if (avg == undefined || avg.length == 0) {
     const AVGTimeDish = new AVGTime({
       dishId: isExists.dishId,
@@ -641,7 +641,7 @@ const DishIsReady = async (req, res, next) => {
       await AVGTimeDish.save();
       await findDish.save();
     } catch (err) {
-      const error = new HttpError("Something went wrong with AVG time", 500);
+      const error = new HttpError('Something went wrong with AVG time', 500);
       return next(error);
     }
   } else {
@@ -694,7 +694,7 @@ const DishIsReady = async (req, res, next) => {
   try {
     await OnProcess.findOneAndRemove({ orderId: orderId });
   } catch (err) {
-    const error = new HttpError("Something went wrong remove onprocess", 500);
+    const error = new HttpError('Something went wrong remove onprocess', 500);
     return next(error);
   }
 
