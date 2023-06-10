@@ -1,5 +1,5 @@
-const HttpError = require("../Models/HttpError");
-const Resturant = require("../Models/Resturant");
+const HttpError = require('../Models/HttpError');
+const Resturant = require('../Models/Resturant');
 
 const AddResturant = async (req, res, next) => {
   const { tableArr, resturntName, seats, KitchenEmplyees } = req.body;
@@ -13,7 +13,7 @@ const AddResturant = async (req, res, next) => {
   try {
     await Res.save();
   } catch (err) {
-    const error = new HttpError("Creating res failed, please try again.", 500);
+    const error = new HttpError('Creating res failed, please try again.', 500);
     return next(error);
   }
   res.status(201).json({ Resturant: Res.toObject({ getters: true }) });
@@ -26,13 +26,13 @@ const getTable = async (req, res, next) => {
     isExist = await Resturant.findById(resID);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any res ",
+      'Something went wrong, could not find any res ',
       500
     );
     return next(error);
   }
   if (!isExist) {
-    const error = new HttpError("res is not exist", 500);
+    const error = new HttpError('res is not exist', 500);
     return next(error);
   }
   let tables = isExist.tableArr;
@@ -51,13 +51,13 @@ const UpdateEmployees = async (req, res, next) => {
     isExist = await Resturant.findById(resID);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any res ",
+      'Something went wrong, could not find any res ',
       500
     );
     return next(error);
   }
   if (!isExist) {
-    const error = new HttpError("res is not exist", 500);
+    const error = new HttpError('res is not exist', 500);
     return next(error);
   }
   isExist.KitchenEmplyees = KitchenEmplyees;
@@ -67,6 +67,30 @@ const UpdateEmployees = async (req, res, next) => {
 
   res.status(201).json({ KitchenEmplyees: KitchenEmplyees });
 };
+
+const guestAmount = async (req, res, next) => {
+  const { resID } = req.body;
+  let isExist;
+  try {
+    isExist = await Resturant.findById(resID);
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not find any res ',
+      500
+    );
+    return next(error);
+  }
+  if (!isExist) {
+    const error = new HttpError('res is not exist', 500);
+    return next(error);
+  }
+  if (isExist.dinersAmount / isExist.seats > 0.5) {
+    return res.status(201).json({ moreThanHalf: true });
+  } else {
+    return res.status(201).json({ moreThanHalf: false });
+  }
+};
 exports.AddResturant = AddResturant;
 exports.getTable = getTable;
 exports.UpdateEmployees = UpdateEmployees;
+exports.guestAmount = guestAmount;
