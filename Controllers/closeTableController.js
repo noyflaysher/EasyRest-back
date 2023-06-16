@@ -1,7 +1,7 @@
-const HttpError = require("../Models/HttpError");
-const CloseTable = require("../Models/CloseTable");
-const OpenTable = require("../Models/OpenTable");
-const Resturant = require("../Models/Resturant");
+const HttpError = require('../Models/HttpError');
+const CloseTable = require('../Models/CloseTable');
+const OpenTable = require('../Models/OpenTable');
+const Resturant = require('../Models/Resturant');
 
 /* 
 tableId:  id 
@@ -18,14 +18,14 @@ const payment = async (req, res, next) => {
     opentbl = await OpenTable.findById(tableId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any table.",
+      'Something went wrong, could not find any table.',
       500
     );
     return next(error);
   }
 
   if (opentbl.length == 0) {
-    const error = new HttpError("Table is not exist", 500);
+    const error = new HttpError('Table is not exist', 500);
     return next(error);
   }
   let paid = 0;
@@ -53,7 +53,9 @@ const payment = async (req, res, next) => {
     const closeTable = new CloseTable({
       numTable: isExist.numTable,
       openTime: isExist.openTime,
-      closeTime: new Date(),
+      closeTime: new Date().toLocaleString('en-US', {
+        timeZone: israelTimeZone,
+      }),
       numberOfPeople: isExist.numberOfPeople,
       TotalPrice: isExist.TotalPrice,
       pTip: tip,
@@ -74,7 +76,7 @@ const payment = async (req, res, next) => {
       await closeTable.save();
     } catch (err) {
       const error = new HttpError(
-        "Creating Close table failed, please try again.",
+        'Creating Close table failed, please try again.',
         500
       );
       return next(error);
@@ -83,7 +85,7 @@ const payment = async (req, res, next) => {
       await OpenTable.findByIdAndRemove(tableId);
     } catch (err) {
       const error = new HttpError(
-        "remove open table failed, please try again.",
+        'remove open table failed, please try again.',
         500
       );
       return next(error);
@@ -94,7 +96,7 @@ const payment = async (req, res, next) => {
     let numberOfPeople = isExist.numberOfPeople;
 
     try {
-      changedAvaTable = await Resturant.find({ "tableArr.tableNum": numTable });
+      changedAvaTable = await Resturant.find({ 'tableArr.tableNum': numTable });
       for (let i = 0; i < changedAvaTable[0].tableArr.length; i++) {
         if (changedAvaTable[0].tableArr[i].tableNum == numTable) {
           changedAvaTable[0].tableArr[i].available = true;
@@ -114,7 +116,7 @@ const GetAllCloseTables = async (req, res, next) => {
     tables = await CloseTable.find({});
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any table.",
+      'Something went wrong, could not find any table.',
       500
     );
     return next(error);
@@ -128,7 +130,7 @@ const RemoveAll = async (req, res, next) => {
     tables = await CloseTable.find({});
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find any table.",
+      'Something went wrong, could not find any table.',
       500
     );
     return next(error);
@@ -137,7 +139,7 @@ const RemoveAll = async (req, res, next) => {
     for (let i = 0; i < tables.length; i++) await tables[i].remove();
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not remove table.",
+      'Something went wrong, could not remove table.',
       500
     );
     return next(error);

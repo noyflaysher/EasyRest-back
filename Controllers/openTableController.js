@@ -87,8 +87,10 @@ const openTable = async (req, res, next) => {
   }
   const openTable = new OpenTable({
     numTable,
-    openTime: new Date(),
-    udate: new Date(),
+    openTime: new Date().toLocaleString('en-US', {
+      timeZone: 'Asia/Jerusalem',
+    }),
+    udate: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' }),
     numberOfPeople,
     TotalPrice: 0,
     avgPerPerson: 0,
@@ -251,7 +253,9 @@ const addDishesToTable = async (req, res, next) => {
         allTogether: dishArray[i].allTogether,
         changes: dishArray[i].changes,
         price: price,
-        orderTime: new Date(),
+        orderTime: new Date().toLocaleString('en-US', {
+          timeZone: 'Asia/Jerusalem',
+        }),
         dishOnline: dishOnline,
         estimatedPrepTime: estimatedTime,
       });
@@ -290,7 +294,9 @@ const addDishesToTable = async (req, res, next) => {
     }
   }
 
-  isExist.udate = new Date();
+  isExist.udate = new Date().toLocaleString('en-US', {
+    timeZone: 'Asia/Jerusalem',
+  });
   isExist.dishArray = orderDish;
   isExist.drinkArray = orderDrinks;
   isExist.TotalPrice = Totalprice;
@@ -357,7 +363,9 @@ const FireTable = async (req, res, next) => {
     return next(error);
   }
 
-  isExist.udate = new Date();
+  isExist.udate = new Date().toLocaleString('en-US', {
+    timeZone: 'Asia/Jerusalem',
+  });
   isExist.fire = true;
 
   try {
@@ -466,7 +474,9 @@ const AskedForwaiter = async (req, res, next) => {
     return next(error);
   }
 
-  isExist.udate = new Date();
+  isExist.udate = new Date().toLocaleString('en-US', {
+    timeZone: 'Asia/Jerusalem',
+  });
   isExist.askedForwaiter = true;
 
   try {
@@ -507,7 +517,9 @@ const AskedForBill = async (req, res, next) => {
     return next(error);
   }
 
-  isExist.udate = new Date();
+  isExist.udate = new Date().toLocaleString('en-US', {
+    timeZone: 'Asia/Jerusalem',
+  });
   isExist.askedForBill = true;
 
   try {
@@ -563,7 +575,9 @@ const DishIsReady = async (req, res, next) => {
     return next(error);
   }
 
-  let now = new Date();
+  let now = new Date().toLocaleString('en-US', {
+    timeZone: 'Asia/Jerusalem',
+  });
   let realTimeTmp = (now - isExists.orderTime) / 1000 / 60;
   let errortmp =
     Math.abs(isExists.estimatedTime - realTimeTmp) / isExists.estimatedTime;
