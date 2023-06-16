@@ -11,6 +11,7 @@ payment:[{
 }],
 discount: number
 */
+//
 const payment = async (req, res, next) => {
   const { tableId, payment, discount } = req.body;
   let opentbl;
