@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.d392f040.css",
-    "main.js": "/static/js/main.18bd5da5.js",
+    "main.js": "/static/js/main.7fb33986.js",
     "static/media/vegan.png": "/static/media/vegan.5a950d4d43808099fe1c.png",
     "static/media/vegeterianFree.jpeg": "/static/media/vegeterianFree.93c434e2a6a775e815e2.jpeg",
     "static/media/glutenFree.jpeg": "/static/media/glutenFree.6a7560fb63dc2f695dcd.jpeg",
@@ -13,10 +13,10 @@
     "static/media/corason.jpeg": "/static/media/corason.4750f1a1a1a3dc11b362.jpeg",
     "index.html": "/index.html",
     "main.d392f040.css.map": "/static/css/main.d392f040.css.map",
-    "main.18bd5da5.js.map": "/static/js/main.18bd5da5.js.map"
+    "main.7fb33986.js.map": "/static/js/main.7fb33986.js.map"
   },
   "entrypoints": [
     "static/css/main.d392f040.css",
-    "static/js/main.18bd5da5.js"
+    "static/js/main.7fb33986.js"
   ]
 }
