@@ -88,9 +88,9 @@ const openTable = async (req, res, next) => {
   const openTable = new OpenTable({
     numTable,
     openTime: new Date().toLocaleString('en-US', {
-      timeZone: 'Asia/Jerusalem',
+      timeZone: 'America/New_York',
     }),
-    udate: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' }),
+    udate: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }),
     numberOfPeople,
     TotalPrice: 0,
     avgPerPerson: 0,
@@ -254,7 +254,7 @@ const addDishesToTable = async (req, res, next) => {
         changes: dishArray[i].changes,
         price: price,
         orderTime: new Date().toLocaleString('en-US', {
-          timeZone: 'Asia/Jerusalem',
+          timeZone: 'America/New_York',
         }),
         dishOnline: dishOnline,
         estimatedPrepTime: estimatedTime,
@@ -295,7 +295,7 @@ const addDishesToTable = async (req, res, next) => {
   }
 
   isExist.udate = new Date().toLocaleString('en-US', {
-    timeZone: 'Asia/Jerusalem',
+    timeZone: 'America/New_York',
   });
   isExist.dishArray = orderDish;
   isExist.drinkArray = orderDrinks;
@@ -364,7 +364,7 @@ const FireTable = async (req, res, next) => {
   }
 
   isExist.udate = new Date().toLocaleString('en-US', {
-    timeZone: 'Asia/Jerusalem',
+    timeZone: 'America/New_York',
   });
   isExist.fire = true;
 
@@ -475,7 +475,7 @@ const AskedForwaiter = async (req, res, next) => {
   }
 
   isExist.udate = new Date().toLocaleString('en-US', {
-    timeZone: 'Asia/Jerusalem',
+    timeZone: 'America/New_York',
   });
   isExist.askedForwaiter = true;
 
@@ -518,7 +518,7 @@ const AskedForBill = async (req, res, next) => {
   }
 
   isExist.udate = new Date().toLocaleString('en-US', {
-    timeZone: 'Asia/Jerusalem',
+    timeZone: 'America/New_York',
   });
   isExist.askedForBill = true;
 
@@ -576,7 +576,7 @@ const DishIsReady = async (req, res, next) => {
   }
 
   let now = new Date().toLocaleString('en-US', {
-    timeZone: 'Asia/Jerusalem',
+    timeZone: 'America/New_York',
   });
   let realTimeTmp = (now - isExists.orderTime) / 1000 / 60;
   let errortmp =
