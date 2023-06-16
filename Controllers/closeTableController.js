@@ -106,7 +106,13 @@ const payment = async (req, res, next) => {
       }
       changedAvaTable[0].dinersAmount -= numberOfPeople;
       await changedAvaTable[0].save();
-    } catch (err) {}
+    } catch (err) {
+      const error = new HttpError(
+        'remove open table failed, please try again.',
+        500
+      );
+      return next(error);
+    }
     res.status(201).json({ Table: closeTable.toObject({ getters: true }) });
   }
 };
