@@ -54,9 +54,7 @@ const payment = async (req, res, next) => {
     const closeTable = new CloseTable({
       numTable: isExist.numTable,
       openTime: isExist.openTime,
-      closeTime: new Date().toLocaleString('en-US', {
-        timeZone: israelTimeZone,
-      }),
+      closeTime: new Date(),
       numberOfPeople: isExist.numberOfPeople,
       TotalPrice: isExist.TotalPrice,
       pTip: tip,
@@ -106,13 +104,7 @@ const payment = async (req, res, next) => {
       }
       changedAvaTable[0].dinersAmount -= numberOfPeople;
       await changedAvaTable[0].save();
-    } catch (err) {
-      const error = new HttpError(
-        'remove open table failed, please try again.',
-        500
-      );
-      return next(error);
-    }
+    } catch (err) {}
     res.status(201).json({ Table: closeTable.toObject({ getters: true }) });
   }
 };
