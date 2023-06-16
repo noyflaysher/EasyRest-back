@@ -23,6 +23,7 @@ const payment = async (req, res, next) => {
     );
     return next(error);
   }
+  //
 
   if (opentbl === undefined || !opentbl || opentbl.length == 0) {
     const error = new HttpError('Table is not exist', 500);
