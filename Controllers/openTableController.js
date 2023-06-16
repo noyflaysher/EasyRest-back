@@ -186,6 +186,7 @@ const addDishesToTable = async (req, res, next) => {
     );
     return next(error);
   }
+  //
   peoplePer = checkAmount(numberOfPeople);
 
   // create the dish array with all the detailes
