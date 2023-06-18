@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.02924d1b.css",
-    "main.js": "/static/js/main.26c10b23.js",
+    "main.css": "/static/css/main.97c69aea.css",
+    "main.js": "/static/js/main.33b0a1ad.js",
     "static/media/vegan.png": "/static/media/vegan.5a950d4d43808099fe1c.png",
     "static/media/vegeterianFree.jpeg": "/static/media/vegeterianFree.93c434e2a6a775e815e2.jpeg",
     "static/media/glutenFree.jpeg": "/static/media/glutenFree.6a7560fb63dc2f695dcd.jpeg",
@@ -12,11 +12,11 @@
     "static/media/bread.jpeg": "/static/media/bread.30eed7e727b8bc7f1493.jpeg",
     "static/media/corason.jpeg": "/static/media/corason.4750f1a1a1a3dc11b362.jpeg",
     "index.html": "/index.html",
-    "main.02924d1b.css.map": "/static/css/main.02924d1b.css.map",
-    "main.26c10b23.js.map": "/static/js/main.26c10b23.js.map"
+    "main.97c69aea.css.map": "/static/css/main.97c69aea.css.map",
+    "main.33b0a1ad.js.map": "/static/js/main.33b0a1ad.js.map"
   },
   "entrypoints": [
-    "static/css/main.02924d1b.css",
-    "static/js/main.26c10b23.js"
+    "static/css/main.97c69aea.css",
+    "static/js/main.33b0a1ad.js"
   ]
 }
