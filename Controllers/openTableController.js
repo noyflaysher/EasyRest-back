@@ -530,6 +530,13 @@ const AskedForBill = async (req, res, next) => {
     return next(error);
   }
 
+  setTimeout(async () => {
+    isExist.askedForBill = false;
+    try {
+      await isExist.save();
+    } catch (err) {}
+  }, 3000);
+
   res.status(201).json({ update: isExist.toObject({ getters: true }) });
 };
 
